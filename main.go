@@ -3,9 +3,11 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
+	"net/http"
 	"os"
+
+	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4"
 	"url-shortener/db"
 )
 
@@ -37,7 +39,6 @@ func main() {
 		fmt.Println("Error connecting to database:", err)
 		return
 	}
-
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
@@ -46,4 +47,18 @@ func main() {
 	}(database)
 
 	fmt.Println("Connected to database")
+
+	// Initialize Echo
+	e := echo.New()
+
+	// Define routes
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
+
+	// Start the Echo server
+	err = e.Start(":1323")
+	if err != nil {
+		fmt.Println("Error starting Echo server:", err)
+	}
 }
