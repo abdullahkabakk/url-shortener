@@ -7,19 +7,24 @@ on:
 jobs:
   commit-message-check-job:
     runs-on: ubuntu-latest
-    name: commit-message-validation
     steps:
-      - uses: actions/checkout@v3
-      - id: foo
-        uses: uptownaravi/verify-commit-message-action@v2
-        with:
-          regex: '^\[[a-zA-Z]+\]'
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Check Commit Message Tag
+        run: |
+          COMMIT_MSG="$(git log --format=%s -n 1)"
+          echo "Commit message: $COMMIT_MSG"
+          if [[ ! "$COMMIT_MSG" =~ ^\[[a-zA-Z]+\] ]]; then
+            echo "Error: Commit message must start with a tag [feat], [fix], [chore], [docs], [style], [refactor], [test], [ci], [build], or [perf]"
+            exit 1
+          fi
 
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Build App
         run: |
@@ -30,7 +35,7 @@ jobs:
     needs: build
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Run Tests
         run: |
