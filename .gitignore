@@ -90,6 +90,7 @@ fabric.properties
 *.so
 *.dylib
 
+.env
 # Test binary, built with `go test -c`
 *.test
 
@@ -102,4 +103,9 @@ fabric.properties
 # Go workspace file
 go.work
 
+generate_changelog.go
+
+
 /.idea/modules.xml
+/generate_changelog.go
+/version-history.txt

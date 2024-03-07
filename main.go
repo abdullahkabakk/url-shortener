@@ -1,7 +1,64 @@
 package main
 
-import "fmt"
+import (
+	"database/sql"
+	"fmt"
+	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4"
+	"url-shortener/db"
+)
+
+// NewMySQLConnector creates a new MySQLConnector with the provided parameters.
+func NewMySQLConnector() *db.MySQLConnector {
+	return &db.MySQLConnector{
+		Username: os.Getenv("DB_USERNAME"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		DBName:   os.Getenv("DB_NAME"),
+	}
+}
 
 func main() {
-	fmt.Println("Hello, World!")
+	// Load environment variables from .env file
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file:", err)
+		return
+	}
+
+	// Create MySQLConnector with environment variables
+	connector := NewMySQLConnector()
+
+	// Connect to the database
+	database, err := db.ConnectToDB(connector)
+	if err != nil {
+		fmt.Println("Error connecting to database:", err)
+		return
+	}
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			fmt.Println("Error closing database connection:", err)
+		}
+	}(database)
+
+	fmt.Println("Connected to database")
+
+	// Initialize Echo
+	e := echo.New()
+
+	// Define routes
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
+
+	// Start the Echo server
+	err = e.Start(":1323")
+	if err != nil {
+		fmt.Println("Error starting Echo server:", err)
+	}
 }
