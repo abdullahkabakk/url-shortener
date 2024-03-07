@@ -13,7 +13,7 @@ jobs:
 
       - name: Check Commit Message Tag
         run: |
-          COMMIT_MSG=$(git log --format=%B -n 1 $GITHUB_SHA)
+          COMMIT_MSG="${{ github.event.pull_request.head.commit.message }}"
           echo "Commit message: $COMMIT_MSG"
           if [[ ! "$COMMIT_MSG" =~ ^\[[a-zA-Z]+\] ]]; then
             echo "Error: Commit message must start with a tag [feat], [fix], [chore], [docs], [style], [refactor], [test], [ci], [build], or [perf]"
