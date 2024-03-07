@@ -1,0 +1,46 @@
+name: Go
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Check Commit Message Tag
+        run: |
+          COMMIT_MSG=$(git log --format=%B -n 1 $GITHUB_SHA)
+          if [[ ! "$COMMIT_MSG" =~ ^\[[a-zA-Z]+\] ]]; then
+            echo "Error: Commit message must start with a tag [feat], [fix], [chore], [docs], [style], [refactor], [test], [ci], [build], or [perf]"
+            exit 1
+          fi
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+
+      - name: Build App
+        run: go build -v ./...
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+
+      - name: Run Tests
+        run: go test -v ./...

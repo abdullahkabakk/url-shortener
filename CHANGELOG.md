@@ -1,6 +1,12 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.0.0.alpha.2 - 07/03/2024
+
+### Added
+
+- **Pipeline:** Added a pipeline to the project.
+
 ## 0.0.0.alpha.1 - 07/03/2024
 
 ### Added
