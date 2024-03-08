@@ -45,9 +45,6 @@ jobs:
       - name: Update README.md with Vulnerability Count
         run: sed -i "s/X/${{ env.VULNERABILITY_COUNT }}/g" README.md
 
-      - name: Remove Gosec Output
-        run: rm gosec_output.txt
-
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -73,9 +70,6 @@ jobs:
 
       - name: Update README.md with Code Coverage
         run: sed -i "s/Y/${{ env.CODE_COVERAGE }}/g" README.md
-
-      - name: Remove Coverage Output
-        run: rm coverage.out
 
   build:
     name: Build
