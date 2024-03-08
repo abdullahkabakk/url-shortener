@@ -39,9 +39,8 @@ jobs:
         run: |
           echo "::set-output name=vulnerabilities::$(grep -o 'Total issues: [0-9]*' gosec_output.txt | awk '{print $3}')"
 
-      - name: Display Vulnerability Count
-        run:
-          echo "Number of vulnerabilities detected: $VULNERABILITY_COUNT"
+      - name: Set Vulnerability Count
+        run: echo "VULNERABILITY_COUNT=${{ steps.parse_output.outputs.vulnerabilities }}" >> $GITHUB_ENV
 
       - name: Update README.md with Vulnerability Count
         run: sed -i "s/X/${{ env.VULNERABILITY_COUNT }}/g" README.md
