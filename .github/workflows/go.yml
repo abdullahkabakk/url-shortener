@@ -56,14 +56,8 @@ jobs:
       - name: Run Tests with Code Coverage
         run: go test ./... -covermode=count -coverpkg=./... -v -coverprofile=coverage.out
 
-      - name: Extract Coverage Percentage
-        run: echo "::set-env name=COVERAGE_PERCENTAGE::$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')"
-
-      - name: Parse Code Coverage Output
-        id: parse_coverage
-        run: |
-          COVERAGE=$(go tool cover -func=coverage.out | grep -oE '[0-9]+\.[0-9]+' | head -n 1)
-          echo "::set-output name=coverage::${COVERAGE}"
+      - name: Parse Coverage Percentage
+        run: echo "::set-output name=coverage::$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')"
 
       - name: Set Code Coverage
         run: echo "CODE_COVERAGE=${{ steps.parse_coverage.outputs.coverage }}" >> $GITHUB_ENV
