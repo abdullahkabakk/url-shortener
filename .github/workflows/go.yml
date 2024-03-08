@@ -5,23 +5,74 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  build:
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.21'
+
+      - name: Run Golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: v1.54
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: ./...
+
+      - name: Parse Gosec Output
+        id: parse_output
+        run: |
+          echo "::set-output name=vulnerabilities::$(grep -o 'Total issues: [0-9]*' gosec_output.txt | awk '{print $3}')"
+
+      - name: Set Vulnerability Count
+        run: echo "VULNERABILITY_COUNT=${{ steps.parse_output.outputs.vulnerabilities }}" >> $GITHUB_ENV
+
+      - name: Update README.md with Vulnerability Count
+        run: sed -i "s/X/${{ env.VULNERABILITY_COUNT }}/g" README.md
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: [lint, security-scan]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run Tests with Code Coverage
+        run: go test ./... -covermode=count -coverpkg=./... -v -coverprofile=coverage.out
+
+      - name: Parse Coverage Percentage
+        run: echo "::set-output name=coverage::$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')"
+
+      - name: Set Code Coverage
+        run: echo "CODE_COVERAGE=${{ steps.parse_coverage.outputs.coverage }}" >> $GITHUB_ENV
+
+      - name: Update README.md with Code Coverage
+        run: sed -i "s/Y/${{ env.CODE_COVERAGE }}/g" README.md
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Build App
         run: |
           go build -v ./...
-
-  test:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Run Tests
-        run: |
-          go test -v ./...
