@@ -1,6 +1,12 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.1.0 - 08/03/2024
+
+### Changed
+
+- **Versioning:** Updated the versioning system to a stable release.
+
 ## 0.0.0.alpha.4 - 08/03/2024
 
 ### Added
