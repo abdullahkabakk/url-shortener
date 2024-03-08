@@ -4,6 +4,8 @@ GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
+GOSEC=gosec
+GOLINT=golangci-lint
 
 # Main package path
 PKG=./
@@ -33,6 +35,11 @@ test:
 	@echo "Running tests..."
 	$(GOTEST) -v ./...
 
+# Run tests with cover
+cover:
+	@echo "Running tests with cover..."
+	$(GOTEST) -cover ./...
+
 # Install dependencies
 install:
 	@echo "Installing dependencies..."
@@ -47,16 +54,39 @@ run:
 # Build and run the application
 start: build run
 
+# Create test coverage report
+report:
+	@echo "Creating test coverage report..."
+	$(GOTEST) -covermode=count -coverpkg=./... -coverprofile coverage.out -v ./...
+	$(GOCMD) tool cover -html coverage.out -o coverage.html
+
+security-check:
+	@echo "Running security check..."
+	$(GOSEC) -quiet ./...
+
+vet:
+	@echo "Running vet..."
+	$(GOCMD) vet ./...
+
+lint:
+	@echo "Running lint..."
+	$(GOLINT) run ./...
+
 # Help
 help:
 	@echo "Available targets:"
-	@echo "  - build:     Build the binary"
-	@echo "  - clean:     Clean up build artifacts"
-	@echo "  - test:      Run tests"
-	@echo "  - install:   Install dependencies"
-	@echo "  - run:       Run the application"
-	@echo "  - start:     Build and run the application"
-	@echo "  - help:      Display this help message"
+	@echo "  - build:          Build the binary"
+	@echo "  - clean:          Clean up build artifacts"
+	@echo "  - test:           Run tests"
+	@echo "  - cover:          Run tests with cover"
+	@echo "  - report:         Create test coverage report"
+	@echo "  - install:        Install dependencies"
+	@echo "  - run:            Run the application"
+	@echo "  - start:          Build and run the application"
+	@echo "  - vet:            Run vet"
+	@echo "  - lint:           Run lint"
+	@echo "  - security-check: Run security check"
+	@echo "  - help:           Display this help message"
 
 # Ensure targets not clash with files in the directory
 .PHONY: all build clean test deps run start help
