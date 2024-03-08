@@ -1,6 +1,20 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.0.0.alpha.4 - 08/03/2024
+
+### Added
+
+- **User Authentication:** Added user authentication to the project.
+
+- **JWT Library:** Added the JWT library to the project.
+
+- **Auth Repository:** Added an auth repository to handle user authentication.
+
+- **Auth Service:** Added an auth service to handle user authentication.
+
+- **Auth Handler:** Added an auth handler to handle user authentication.
+
 ## 0.0.0.alpha.3 - 08/03/2024
 
 ### Added
