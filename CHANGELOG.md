@@ -1,6 +1,16 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.2.0.alpha.2 - 09/03/2024
+
+### Added
+
+- **URL Service:** Added a URL service to the project.
+
+- **Generate Short URL:** Added a function to generate a short URL.
+
+- **Mock URL Repository:** Added a mock URL repository to the project.
+
 ## 0.2.0.alpha.1 - 09/03/2024
 
 ### Added
