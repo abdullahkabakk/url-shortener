@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 	"time"
-	"url-shortener/internal/app/models"
+	"url-shortener/internal/app/models/user"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -19,7 +19,7 @@ func TestMySQLUserRepository_Create(t *testing.T) {
 	defer db.Close()
 
 	repo := NewDBAuthRepository(db)
-	user := &models.User{
+	user := &user_model.User{
 		Username: "testuser",
 		Password: "password123",
 	}
@@ -112,7 +112,7 @@ func TestDBUserRepositoryGetByUsername(t *testing.T) {
 	username := "testuser"
 
 	t.Run("Get User Successfully", func(t *testing.T) {
-		expectedUser := &models.User{
+		expectedUser := &user_model.User{
 			ID:               1,
 			Username:         username,
 			Password:         "password123",
@@ -141,7 +141,7 @@ func TestDBUserRepositoryGetByUsername(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, user)
-		assert.True(t, errors.Is(err, models.ErrUserNotFound))
+		assert.True(t, errors.Is(err, user_model.ErrUserNotFound))
 
 	})
 

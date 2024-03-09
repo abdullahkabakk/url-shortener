@@ -3,7 +3,7 @@ package mocks
 import (
 	"errors"
 	"testing"
-	"url-shortener/internal/app/models"
+	"url-shortener/internal/app/models/user"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -12,7 +12,7 @@ func TestMockUserRepository_Create(t *testing.T) {
 	repo := NewMockUserRepository()
 
 	t.Run("Create User Successfully", func(t *testing.T) {
-		user := &models.User{
+		user := &user_model.User{
 			Username: "testuser",
 			Password: "password123",
 		}
@@ -27,7 +27,7 @@ func TestMockUserRepository_Create(t *testing.T) {
 	})
 
 	t.Run("Failed to Create User with Existing Username", func(t *testing.T) {
-		user := &models.User{
+		user := &user_model.User{
 			Username: "testuser",
 			Password: "password123",
 		}
@@ -36,7 +36,7 @@ func TestMockUserRepository_Create(t *testing.T) {
 		_, err := repo.Create(user)
 
 		assert.Error(t, err)
-		assert.True(t, errors.Is(err, models.ErrUserAlreadyExists))
+		assert.True(t, errors.Is(err, user_model.ErrUserAlreadyExists))
 	})
 }
 
@@ -44,7 +44,7 @@ func TestMockUserRepository_GetByUsername(t *testing.T) {
 	repo := NewMockUserRepository()
 
 	t.Run("Get User Successfully", func(t *testing.T) {
-		user := &models.User{
+		user := &user_model.User{
 			ID:       1,
 			Username: "testuser",
 			Password: "password123",
@@ -66,7 +66,7 @@ func TestMockUserRepository_GetByUsername(t *testing.T) {
 		_, err := repo.GetByUsername("nonexistent")
 
 		assert.Error(t, err)
-		assert.True(t, errors.Is(err, models.ErrUserNotFound))
+		assert.True(t, errors.Is(err, user_model.ErrUserNotFound))
 	})
 
 	t.Run("Failed to Get User with Error", func(t *testing.T) {
@@ -74,7 +74,7 @@ func TestMockUserRepository_GetByUsername(t *testing.T) {
 		_, err := repo.GetByUsername("error")
 
 		assert.Error(t, err)
-		assert.True(t, errors.Is(err, models.ErrUserNotFound))
+		assert.True(t, errors.Is(err, user_model.ErrUserNotFound))
 	})
 
 }

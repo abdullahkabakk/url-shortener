@@ -3,13 +3,13 @@ package auth_repository
 import (
 	"database/sql"
 	"errors"
-	"url-shortener/internal/app/models"
+	"url-shortener/internal/app/models/user"
 )
 
 // Repository defines methods to interact with the auth repository.
 type Repository interface {
-	Create(user *models.User) (*models.User, error)
-	GetByUsername(username string) (*models.User, error)
+	Create(user *user_model.User) (*user_model.User, error)
+	GetByUsername(username string) (*user_model.User, error)
 }
 
 // DBAuthRepository is an implementation of UserRepository for MySQL database.
@@ -24,7 +24,7 @@ func NewDBAuthRepository(db *sql.DB) *DBAuthRepository {
 }
 
 // Create inserts a new auth record into the database.
-func (r *DBAuthRepository) Create(user *models.User) (*models.User, error) {
+func (r *DBAuthRepository) Create(user *user_model.User) (*user_model.User, error) {
 	// Prepare SQL statement
 	query := "INSERT INTO users (username, password) VALUES (?, ?)"
 	stmt, err := r.DB.Prepare(query)
@@ -53,21 +53,21 @@ func (r *DBAuthRepository) Create(user *models.User) (*models.User, error) {
 	return user, nil
 }
 
-// GetByUsername retrieves a auth record from the database by username.
-func (r *DBAuthRepository) GetByUsername(username string) (*models.User, error) {
+// GetByUsername retrieves an auth record from the database by username.
+func (r *DBAuthRepository) GetByUsername(username string) (*user_model.User, error) {
 	// Prepare SQL statement
 	query := "SELECT id, username, password, registration_date FROM users WHERE username = ?"
 	row := r.DB.QueryRow(query, username)
 
 	// Initialize a new User object to store the result
-	user := &models.User{}
+	user := &user_model.User{}
 
 	// Scan the result into the User object
 	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.RegistrationDate)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			// Return a custom error if the auth with the specified username is not found
-			return nil, models.ErrUserNotFound
+			return nil, user_model.ErrUserNotFound
 		}
 		return nil, err
 	}

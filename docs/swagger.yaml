@@ -1,0 +1,254 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "URL Shortener Service API",
+    "description": "API for URL Shortener Service allowing users to shorten URLs and redirect to original URLs.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Abdullah Kabak",
+      "email": "abdullahkabakk@gmail.com"
+    }
+  },
+  "basePath": "/api",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "Authorization": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "token"
+    }
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "description": "Endpoint to register a new user.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "User registration details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserRegistration"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User registered successfully",
+            "schema": {
+              "$ref": "#/definitions/UserToken"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login user",
+        "description": "Endpoint to authenticate and log in a user.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "User login credentials",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserLogin"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+              "schema": {
+                "$ref": "#/definitions/UserToken"
+              }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/url/shorten": {
+      "post": {
+        "summary": "Shorten a URL",
+        "description": "Endpoint to create a shortened URL.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "URL data to be shortened",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/URLData"
+            }
+          }
+        ],
+        "security": [
+          {
+            "Authorization": [
+            "schema": "#/definitions/UserToken"
+            ]
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Shortened URL created successfully",
+            "schema": {
+              "$ref": "#/definitions/ShortenedURL"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+    },
+    "/{id}": {
+      "get": {
+        "summary": "Redirect to original URL",
+        "description": "Endpoint to redirect to the original URL from a shortened URL.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Shortened URL ID",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to original URL"
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            },
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "UserRegistration": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Username of the user to be registered"
+        },
+        "password": {
+          "type": "string",
+          "description": "Password of the user to be registered"
+        }
+      }
+    },
+    "UserLogin": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Username of the user to be logged in"
+        },
+        "password": {
+          "type": "string",
+            "description": "Password of the user to be registered"
+        }
+      }
+    },
+    "URLData": {
+      "type": "object",
+
+      "properties": {
+        "original_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Original URL to be shortened"
+        },
+      }
+    },
+    "ShortenedURL": {
+      "type": "object",
+      "properties": {
+        "shortened_url": {
+          "type": "string",
+          "description": "Shortened URL created successfully"
+        }
+      }
+    },
+    "UserToken": {
+        "type": "object",
+        "properties": {
+            "token": {
+            "type": "string",
+            "description": "JWT token for user authentication"
+            }
+        }
+    },
+    "Error": {
+      "type": "object",
+        "properties": {
+            "error": {
+            "type": "string",
+            "description": "Error message"
+            }
+        }
+    }
+  }
+}

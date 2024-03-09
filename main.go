@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"runtime"
+	"time"
 	"url-shortener/internal/app/handlers"
 	"url-shortener/internal/config"
 	"url-shortener/internal/infrastructure/database"
@@ -14,6 +16,14 @@ import (
 )
 
 func main() {
+	// Start a goroutine to periodically display memory usage
+	go func() {
+		for {
+			printMemoryUsage()
+			time.Sleep(5 * time.Second) // Adjust the interval as needed
+		}
+	}()
+
 	// Load environment variables from .env file
 	err := godotenv.Load()
 	if err != nil {
@@ -51,6 +61,12 @@ func main() {
 
 	// Create auth handler
 	userHandler, err := handlers.InitializeUserHandlers(db)
+	if err != nil {
+		fmt.Println("[MAIN] Error initializing auth handlers:", err)
+		return
+	}
+
+	urlHandler, err := handlers.InitializeURLHandlers(db)
 
 	if err != nil {
 		fmt.Println("[MAIN] Error initializing auth handlers:", err)
@@ -59,7 +75,7 @@ func main() {
 
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
-	server := http.NewServer(host, port, userHandler)
+	server := http.NewServer(host, port, userHandler, urlHandler)
 
 	err = server.Start()
 	if err != nil {
@@ -67,4 +83,19 @@ func main() {
 	}
 
 	fmt.Println("[SERVER] Server started at", host+":"+port)
+}
+
+func printMemoryUsage() {
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+
+	fmt.Println("Memory Usage:")
+	fmt.Printf("Alloc = %v MiB", bToMb(m.Alloc))
+	fmt.Printf("\tTotalAlloc = %v MiB", bToMb(m.TotalAlloc))
+	fmt.Printf("\tSys = %v MiB", bToMb(m.Sys))
+	fmt.Printf("\tNumGC = %v\n", m.NumGC)
+}
+
+func bToMb(b uint64) uint64 {
+	return b / 1024 / 1024
 }

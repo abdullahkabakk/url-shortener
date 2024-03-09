@@ -1,6 +1,6 @@
 # URL Shortener
 
-![Coverage](https://img.shields.io/badge/coverage-${COVERAGE_PERCENTAGE}%25-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-67.4%30-brightgreen)
 
 This project is a URL shortener built with Go and Echo framework, utilizing MySQL for data storage.
 
@@ -8,6 +8,7 @@ Feel free to check the initial design of the database schema [here](https://dbdo
 
 ## Table of Contents
 - [Installation](#installation)
+- [Directory Structure](#directory-structure)
 - [Commit Tag Meanings](#commit-tag-meanings)
 - [Changelog](#changelog)
 - [Security](#security)
@@ -62,6 +63,42 @@ Feel free to check the initial design of the database schema [here](https://dbdo
     go test ./...
     ```
 
+9. You can also make coverage reports using the following command:
+
+    ```bash
+    make report
+    ```
+
+## Directory Structure
+
+The project's directory structure is as follows:
+
+```
+.
+├── internal
+│   ├── app
+│   │   ├── handler
+│   │   │   ├── auth
+│   │   │   └── url
+│   │   ├── models
+│   │   │   ├── url
+│   │   │   └── user
+│   │   ├── repository
+│   │   │   ├── auth
+│   │   │   └── url
+│   │   └── services
+│   │       ├── auth
+│   │       └── url
+│   ├── config
+│   ├── infrastructure
+│   │   ├── database
+│   │   │   └── migrations
+│   │   └── http
+│   ├── mocks
+│   └── utils
+...
+```
+
 ## Commit Tag Meanings
 
 Commit tags convey the nature of changes made in the codebase. Below are common commit tags and their meanings:
@@ -85,11 +122,11 @@ All significant updates to this project will be meticulously documented in this 
 
 ## Security
 
-The project is regularly scanned for security vulnerabilities using security tools like Gosec. The current number of security vulnerabilities detected is X.
+The project is regularly scanned for security vulnerabilities using security tools like Gosec. The current number of security vulnerabilities detected is 0.
 
 ## Code Coverage
 
-The project's test coverage is tracked using tools like Golang Codecov. The current code coverage percentage is Y%. 
+The project's test coverage is tracked using tools like Golang Codecov. The current code coverage percentage is 67.4%. 
 
 ## Contributing
 
