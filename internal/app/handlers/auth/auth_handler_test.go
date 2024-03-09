@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"url-shortener/internal/app/models"
+	"url-shortener/internal/app/models/user"
 	"url-shortener/internal/app/services/auth"
 	"url-shortener/internal/mocks"
 
@@ -26,10 +26,11 @@ func TestCreateUserHandler(t *testing.T) {
 	// Create mock user repository and service
 	userRepository := mocks.NewMockUserRepository()
 	userService := auth_service.NewAuthService(userRepository)
-	userHandler := NewAuthHandler(userService)
+	tokenService := mocks.NewMockTokenService()
+	userHandler := NewAuthHandler(userService, tokenService)
 
 	// Define test user data
-	userData := models.User{
+	userData := user_model.User{
 		Username: "testuser",
 		Password: "password123",
 	}
@@ -80,8 +81,27 @@ func TestCreateUserHandler(t *testing.T) {
 
 		// Check the response
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
-		assert.Contains(t, rec.Body.String(), models.ErrUserAlreadyExists.Error())
+		assert.Contains(t, rec.Body.String(), user_model.ErrUserAlreadyExists.Error())
 		assert.NoError(t, err)
+	})
+
+	t.Run("Should return error for user named 'error'", func(t *testing.T) {
+		// Prepare a mock echo.Context with valid request body
+		userData.Username = "error_token"
+		jsonData, _ := json.Marshal(userData)
+		req := httptest.NewRequest(http.MethodPost, registerEndpoint, bytes.NewReader(jsonData))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call CreateUserHandler with valid request body
+		err := userHandler.CreateUserHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+		assert.Contains(t, rec.Body.String(), user_model.ErrUserAlreadyExists.Error())
+		assert.NoError(t, err)
+
 	})
 }
 
@@ -90,17 +110,18 @@ func TestLoginUserHandler(t *testing.T) {
 	// Create mock user repository and service
 	userRepository := mocks.NewMockUserRepository()
 	userService := auth_service.NewAuthService(userRepository)
-	userHandler := NewAuthHandler(userService)
+	tokenService := mocks.NewMockTokenService()
+	userHandler := NewAuthHandler(userService, tokenService)
 
 	// Define test user data
-	userData := models.User{
+	userData := user_model.User{
 		Username: "testuser",
 		Password: "password123",
 	}
 
 	t.Run("Should login auth", func(t *testing.T) {
 		// Create a new auth
-		_, err := userService.CreateUser(userData.Username, userData.Password)
+		err := userService.CreateUser(userData.Username, userData.Password)
 		assert.NoError(t, err)
 
 		// Prepare a mock echo.Context with valid request body
@@ -149,7 +170,7 @@ func TestLoginUserHandler(t *testing.T) {
 
 		// Check the response
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
-		assert.Contains(t, rec.Body.String(), models.ErrUserNotFound.Error())
+		assert.Contains(t, rec.Body.String(), user_model.ErrUserNotFound.Error())
 		assert.NoError(t, err)
 	})
 
@@ -167,7 +188,30 @@ func TestLoginUserHandler(t *testing.T) {
 
 		// Check the response
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
-		assert.Contains(t, rec.Body.String(), models.ErrUserNotFound.Error())
+		assert.Contains(t, rec.Body.String(), user_model.ErrUserNotFound.Error())
 		assert.NoError(t, err)
+	})
+
+	t.Run("Should return error for user named 'error_token'", func(t *testing.T) {
+		// Create user with username 'error_token'
+		err := userService.CreateUser("error_token", "password123")
+		assert.NoError(t, err)
+
+		// Prepare a mock echo.Context with valid request body
+		userData.Username = "error_token"
+		jsonData, _ := json.Marshal(userData)
+		req := httptest.NewRequest(http.MethodPost, loginEndpoint, bytes.NewReader(jsonData))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call LoginUserHandler with valid request body
+		err = userHandler.LoginUserHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+		assert.Contains(t, rec.Body.String(), user_model.ErrUserAlreadyExists.Error())
+		assert.NoError(t, err)
+
 	})
 }

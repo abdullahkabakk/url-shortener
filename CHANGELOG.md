@@ -1,6 +1,28 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.2.0 - 09/03/2024
+
+### Added
+
+- **API Documentation:** Added API documentation to the project.
+
+### Changed
+
+- **Directory of User Model:** Moved the user model to the `internal/app/models/user` directory.
+
+- **Directory of Auth Handler:** Moved the auth handler to the `internal/app/handler/auth` directory.
+
+- **Directory of Auth Repository:** Moved the auth repository to the `internal/app/repository/auth` directory.
+
+- **Directory of Auth Service:** Moved the auth service to the `internal/app/services/auth` directory.
+
+- **Make Token as a Service:** Refactored the code to make token generation a service.
+
+- **Handler Generates Token**: Refactored the code to make the handler generate tokens instead of auth service.
+
+- **Auth Handler Takes Token Service**: Refactored the code to make the auth handler take the token service as a dependency.
+
 ## 0.1.0 - 08/03/2024
 
 ### Changed

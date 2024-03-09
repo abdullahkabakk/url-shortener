@@ -1,27 +1,27 @@
 package mocks
 
 import (
-	"url-shortener/internal/app/models"
+	"url-shortener/internal/app/models/user"
 )
 
 // MockUserRepository is a mock implementation of UserRepository interface for testing purposes.
 type MockUserRepository struct {
-	Users map[uint]*models.User
+	Users map[uint]*user_model.User
 }
 
 // NewMockUserRepository creates a new instance of MockUserRepository.
 func NewMockUserRepository() *MockUserRepository {
 	return &MockUserRepository{
-		Users: make(map[uint]*models.User),
+		Users: make(map[uint]*user_model.User),
 	}
 }
 
 // Create simulates creating a new auth in the mock database.
-func (r *MockUserRepository) Create(user *models.User) (*models.User, error) {
+func (r *MockUserRepository) Create(user *user_model.User) (*user_model.User, error) {
 	// username should be unique
 	for _, u := range r.Users {
 		if u.Username == user.Username {
-			return nil, models.ErrUserAlreadyExists
+			return nil, user_model.ErrUserAlreadyExists
 		}
 
 	}
@@ -30,11 +30,11 @@ func (r *MockUserRepository) Create(user *models.User) (*models.User, error) {
 	return user, nil
 }
 
-// GetByUsername simulates retrieving a auth by username from the mock database.
-func (r *MockUserRepository) GetByUsername(username string) (*models.User, error) {
+// GetByUsername simulates retrieving an auth by username from the mock database.
+func (r *MockUserRepository) GetByUsername(username string) (*user_model.User, error) {
 	// DB error can be simulated here
 	if username == "error" {
-		return nil, models.ErrUserNotFound
+		return nil, user_model.ErrUserNotFound
 	}
 
 	//  Check if auth exists
@@ -46,5 +46,5 @@ func (r *MockUserRepository) GetByUsername(username string) (*models.User, error
 	}
 
 	// Return an error if auth not found
-	return nil, models.ErrUserNotFound
+	return nil, user_model.ErrUserNotFound
 }

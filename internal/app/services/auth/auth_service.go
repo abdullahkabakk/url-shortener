@@ -2,9 +2,8 @@ package auth_service
 
 import (
 	"golang.org/x/crypto/bcrypt"
-	"url-shortener/internal/app/models"
+	"url-shortener/internal/app/models/user"
 	"url-shortener/internal/app/repositories/auth"
-	"url-shortener/internal/helpers"
 )
 
 // Service handles operations related to users.
@@ -20,15 +19,15 @@ func NewAuthService(AuthRepository auth_repository.Repository) *Service {
 
 // CreateUser creates a new auth with the provided data.
 // It hashes the password before storing it in the database.
-func (s *Service) CreateUser(username, password string) (string, error) {
+func (s *Service) CreateUser(username, password string) error {
 	// Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	// Create the auth with the hashed password
-	user := &models.User{
+	user := &user_model.User{
 		Username: username,
 		Password: string(hashedPassword), // Convert hashed password to string
 	}
@@ -36,38 +35,26 @@ func (s *Service) CreateUser(username, password string) (string, error) {
 	// Call the auth repository to create the auth
 	_, err = s.Repository.Create(user)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	// Generate a token for the authenticated auth
-	token, err := helpers.GenerateToken(user)
-	if err != nil {
-		return "", err
-	}
-
-	return token, nil
+	return nil
 }
 
 // LoginUser authenticates the auth with the provided username and password.
 // It returns a token upon successful authentication.
-func (s *Service) LoginUser(username, password string) (string, error) {
+func (s *Service) LoginUser(username, password string) error {
 	// Retrieve auth from the database
 	user, err := s.Repository.GetByUsername(username)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	// Compare the hashed password with the provided password
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	// Generate a token for the authenticated auth
-	token, err := helpers.GenerateToken(user)
-	if err != nil {
-		return "", err
-	}
-
-	return token, nil
+	return nil
 }
