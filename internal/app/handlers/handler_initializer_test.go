@@ -48,3 +48,25 @@ func TestInitializeURLHandlers(t *testing.T) {
 
 	mock.ExpectClose()
 }
+
+func TestInitializeClickHandlers(t *testing.T) {
+	db, mock, err := sqlmock.New()
+
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	defer db.Close()
+
+	clickHandler, err := InitializeClickHandlers(db)
+
+	if err != nil {
+		t.Errorf("Error initializing click handlers: %s", err)
+	}
+
+	if clickHandler == nil {
+		t.Errorf("Click handler is nil")
+	}
+
+	mock.ExpectClose()
+}

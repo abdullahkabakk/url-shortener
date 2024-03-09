@@ -9,8 +9,10 @@ import (
 	"os"
 	"testing"
 	"url-shortener/internal/app/handlers/auth"
+	clicks_handler "url-shortener/internal/app/handlers/clicks"
 	url_handler "url-shortener/internal/app/handlers/url"
 	"url-shortener/internal/app/services/auth"
+	clicks_service "url-shortener/internal/app/services/clicks"
 	"url-shortener/internal/app/services/token"
 	url_service "url-shortener/internal/app/services/url"
 	"url-shortener/internal/mocks"
@@ -22,9 +24,11 @@ func TestServer_StartAndShutdown(t *testing.T) {
 	authService := auth_service.NewAuthService(mocks.NewMockUserRepository())
 	urlService := url_service.NewURLService(mocks.NewMockUrlRepository())
 	tokenService := token_service.NewTokenService(os.Getenv("JWT_SECRET_KEY"))
+	clicksService := clicks_service.NewClicksService(mocks.NewMockClicksRepository())
 	userHandler := auth_handler.NewAuthHandler(authService, tokenService) // assuming NewHandler() creates a new instance
 	urlHandler := url_handler.NewURLHandler(urlService, tokenService)     // assuming NewHandler() creates a new instance
-	server := NewServer("localhost", "8080", userHandler, urlHandler)
+	clicksHandler := clicks_handler.NewClickHandler(clicksService, urlService)
+	server := NewServer("localhost", "8080", userHandler, urlHandler, clicksHandler)
 
 	// Start server
 	go func() {

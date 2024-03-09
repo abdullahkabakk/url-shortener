@@ -4,12 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-	"runtime"
 	"time"
 	"url-shortener/internal/app/handlers"
 	"url-shortener/internal/config"
 	"url-shortener/internal/infrastructure/database"
-	"url-shortener/internal/infrastructure/database/migrations"
 	"url-shortener/internal/infrastructure/http"
 
 	"github.com/joho/godotenv"
@@ -52,12 +50,12 @@ func main() {
 	fmt.Println("[DATABASE] Connected to database")
 
 	// Run migrations
-	migrationsDir := os.Getenv("MIGRATIONS_DIR")
-	err = migrations.RunMigrations(db, migrationsDir)
-	if err != nil {
-		fmt.Println("[MAIN] Error running migrations:", err)
-		return
-	}
+	//migrationsDir := os.Getenv("MIGRATIONS_DIR")
+	//err = migrations.RunMigrations(db, migrationsDir)
+	//if err != nil {
+	//	fmt.Println("[MAIN] Error running migrations:", err)
+	//	return
+	//}
 
 	// Create auth handler
 	userHandler, err := handlers.InitializeUserHandlers(db)
@@ -73,9 +71,17 @@ func main() {
 		return
 	}
 
+	clicksHandler, err := handlers.InitializeClickHandlers(db)
+
+	if err != nil {
+		fmt.Println("[MAIN] Error initializing auth handlers:", err)
+		return
+
+	}
+
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
-	server := http.NewServer(host, port, userHandler, urlHandler)
+	server := http.NewServer(host, port, userHandler, urlHandler, clicksHandler)
 
 	err = server.Start()
 	if err != nil {
@@ -83,19 +89,4 @@ func main() {
 	}
 
 	fmt.Println("[SERVER] Server started at", host+":"+port)
-}
-
-func printMemoryUsage() {
-	var m runtime.MemStats
-	runtime.ReadMemStats(&m)
-
-	fmt.Println("Memory Usage:")
-	fmt.Printf("Alloc = %v MiB", bToMb(m.Alloc))
-	fmt.Printf("\tTotalAlloc = %v MiB", bToMb(m.TotalAlloc))
-	fmt.Printf("\tSys = %v MiB", bToMb(m.Sys))
-	fmt.Printf("\tNumGC = %v\n", m.NumGC)
-}
-
-func bToMb(b uint64) uint64 {
-	return b / 1024 / 1024
 }
