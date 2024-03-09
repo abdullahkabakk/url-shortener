@@ -8,6 +8,7 @@ import (
 var ErrURLNotFound = errors.New("URL not found")
 var ErrShortCodeAlreadyExists = errors.New("short code already exists")
 var ErrInvalidToken = errors.New("invalid token")
+var ErrClickNotCreated = errors.New("click not created")
 
 // URL represents a URL entity in the application.
 type URL struct {

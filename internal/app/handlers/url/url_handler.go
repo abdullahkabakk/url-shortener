@@ -1,8 +1,11 @@
 package url_handler
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"net/url"
+	"strings"
 	"url-shortener/internal/app/models/url"
 	"url-shortener/internal/app/services/token"
 	"url-shortener/internal/app/services/url"
@@ -27,9 +30,14 @@ func (h *Handler) ShortenURLHandler(c echo.Context) error {
 
 	// Initialize userID to nil
 	var userID *uint
-
+	fmt.Println("token", token)
 	// If token is provided, validate it and get the user ID
 	if token != "" {
+		parts := strings.Fields(token)
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
+		}
+		token = parts[1]
 		// Call the authentication service to validate the token and get the user ID
 		id, err := h.TokenService.ValidateToken(token)
 		if err != nil {
@@ -42,6 +50,12 @@ func (h *Handler) ShortenURLHandler(c echo.Context) error {
 	var urlData url_model.URL
 	if err := c.Bind(&urlData); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
+	}
+
+	// Check if the provided URL is valid
+	_, err := url.ParseRequestURI(urlData.OriginalURL)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid URL"})
 	}
 
 	// Call the URL service to shorten the URL with the user ID

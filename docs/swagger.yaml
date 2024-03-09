@@ -158,7 +158,7 @@
         }
       },
     },
-    "/{id}": {
+    "/clicks/{id}": {
       "get": {
         "summary": "Redirect to original URL",
         "description": "Endpoint to redirect to the original URL from a shortened URL.",

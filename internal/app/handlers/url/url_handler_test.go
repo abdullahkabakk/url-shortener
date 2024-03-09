@@ -86,7 +86,7 @@ func TestShortenUrlHandler(t *testing.T) {
 		if err != nil {
 			return
 		}
-		req.Header.Set("Authorization", token)
+		req.Header.Set("Authorization", "Bearer "+token)
 		rec := httptest.NewRecorder()
 		c := echo.New().NewContext(req, rec)
 
@@ -109,7 +109,7 @@ func TestShortenUrlHandler(t *testing.T) {
 
 		err := mockHandler.ShortenURLHandler(c)
 
-		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
 		assert.Contains(t, rec.Body.String(), "error")
 		assert.NoError(t, err)
 	})

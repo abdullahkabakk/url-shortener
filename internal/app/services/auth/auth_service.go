@@ -19,42 +19,38 @@ func NewAuthService(AuthRepository auth_repository.Repository) *Service {
 
 // CreateUser creates a new auth with the provided data.
 // It hashes the password before storing it in the database.
-func (s *Service) CreateUser(username, password string) error {
+func (s *Service) CreateUser(user user_model.User) (*user_model.User, error) {
 	// Hash the password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	// Create the auth with the hashed password
-	user := &user_model.User{
-		Username: username,
-		Password: string(hashedPassword), // Convert hashed password to string
-	}
+	user.Password = string(hashedPassword) // Convert hashed password to string
 
 	// Call the auth repository to create the auth
-	_, err = s.Repository.Create(user)
+	userVal, err := s.Repository.Create(&user)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return userVal, nil
 }
 
 // LoginUser authenticates the auth with the provided username and password.
 // It returns a token upon successful authentication.
-func (s *Service) LoginUser(username, password string) error {
+func (s *Service) LoginUser(user user_model.User) (*user_model.User, error) {
 	// Retrieve auth from the database
-	user, err := s.Repository.GetByUsername(username)
+	userVal, err := s.Repository.GetByUsername(user.Username)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Compare the hashed password with the provided password
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	err = bcrypt.CompareHashAndPassword([]byte(userVal.Password), []byte(user.Password))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return userVal, nil
 }

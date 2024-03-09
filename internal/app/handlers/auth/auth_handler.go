@@ -29,13 +29,13 @@ func (h *Handler) CreateUserHandler(c echo.Context) error {
 	}
 
 	// Call the auth service to create the auth
-	err := h.Service.CreateUser(user.Username, user.Password)
+	userVal, err := h.Service.CreateUser(user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
 	// Generate a token for the created auth
-	token, err := h.TokenRepository.GenerateToken(&user)
+	token, err := h.TokenRepository.GenerateToken(userVal)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
@@ -52,13 +52,13 @@ func (h *Handler) LoginUserHandler(c echo.Context) error {
 	}
 
 	// Call the auth service to log in the auth
-	err := h.Service.LoginUser(user.Username, user.Password)
+	userVal, err := h.Service.LoginUser(user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
 	// Generate a token for the authenticated auth
-	token, err := h.TokenRepository.GenerateToken(&user)
+	token, err := h.TokenRepository.GenerateToken(userVal)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}

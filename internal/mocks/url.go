@@ -48,6 +48,9 @@ func (r *MockUrlRepository) GetOriginalURL(shortCode string) (string, error) {
 		return "https://www.google.com", nil
 	}
 
+	if shortCode == "invalid" {
+		return "https://www.google.com", nil
+	}
 	// Return an error if url not found
 	return "", url_model.ErrURLNotFound
 }

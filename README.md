@@ -1,19 +1,61 @@
 # URL Shortener
 
-![Coverage](https://img.shields.io/badge/coverage-67.4%30-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-84.4%30-darkgreen)
 
 This project is a URL shortener built with Go and Echo framework, utilizing MySQL for data storage.
 
 Feel free to check the initial design of the database schema [here](https://dbdocs.io/abdullahkabak322/URL-Shortener).
 
 ## Table of Contents
+- [Introduction](#introduction)
+- [Features](#features)
+- [Technologies](#technologies)
+- [API Endpoints](#api-endpoints)
 - [Installation](#installation)
+- [Database Migrations](#database-migrations)
+- [Usage](#usage)
 - [Directory Structure](#directory-structure)
 - [Commit Tag Meanings](#commit-tag-meanings)
 - [Changelog](#changelog)
 - [Security](#security)
 - [Code Coverage](#code-coverage)
 - [Contributing](#contributing)
+- [License](#license)
+
+## Introduction
+
+The project is a URL shortener that allows users to shorten long URLs into short, easy-to-remember URLs. 
+It also provides a redirection service that allows users to redirect to the original URL by visiting the short URL.
+The project also includes user authentication to allow users to create accounts and manage their shortened URLs.
+
+## Features
+
+- User authentication
+- URL shortening
+- URL redirection
+
+## Technologies
+
+- Go
+- Echo
+- MySQL
+
+## API Endpoints
+
+The following are the API endpoints available in the application:
+
+### Auth
+
+- `POST /auth/register`: Register a new user
+- `POST /auth/login`: Login a user
+
+### URL
+
+- `POST /url/shorten`: Shorten a URL
+
+### Clicks
+
+- `GET /clicks/:shortURL`: Redirect to the original URL
 
 ## Installation
 
@@ -68,6 +110,36 @@ Feel free to check the initial design of the database schema [here](https://dbdo
     ```bash
     make report
     ```
+
+## Database Migrations
+
+The project uses Golang Migrate for database migrations. But doesn't include migration files. You need to create migration files for user, url, and click tables.
+
+## Usage
+
+To create a user, run the following command:
+
+```bash
+curl -X POST http://localhost:8080/auth/register -d '{"username": "user", "password": "password"}'
+```
+
+To log in a user, run the following command:
+
+```bash
+curl -X POST http://localhost:8080/auth/login -d '{"username": "user", "password": "password"}'
+```
+
+To shorten a URL, run the following command:
+
+```bash
+curl -X POST http://localhost:8080/url/shorten -d '{"url": "https://www.google.com"}' -H "Authorization
+```
+
+To redirect to the original URL, run the following command:
+
+```bash
+curl -X GET http://localhost:8080/clicks/<shortURL>
+```
 
 ## Directory Structure
 
@@ -126,8 +198,12 @@ The project is regularly scanned for security vulnerabilities using security too
 
 ## Code Coverage
 
-The project's test coverage is tracked using tools like Golang Codecov. The current code coverage percentage is 67.4%. 
+The project's test coverage is tracked using tools like Golang Codecov. The current code coverage percentage is 84.4%. 
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues and pull requests.
+
+## License
+
+This project is open-source and is available under the [MIT License](LICENSE).

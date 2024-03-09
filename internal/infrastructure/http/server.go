@@ -5,6 +5,7 @@ import (
 	"fmt"
 	_ "net/http"
 	"url-shortener/internal/app/handlers/auth"
+	clicks_handler "url-shortener/internal/app/handlers/clicks"
 	"url-shortener/internal/app/handlers/url"
 
 	"github.com/labstack/echo/v4"
@@ -19,7 +20,7 @@ type Server struct {
 }
 
 // NewServer creates a new instance of the HTTP server.
-func NewServer(host, port string, userHandler *auth_handler.Handler, urlHandler *url_handler.Handler) *Server {
+func NewServer(host, port string, userHandler *auth_handler.Handler, urlHandler *url_handler.Handler, clickHandler *clicks_handler.Handler) *Server {
 	e := echo.New()
 
 	// Middleware
@@ -34,9 +35,13 @@ func NewServer(host, port string, userHandler *auth_handler.Handler, urlHandler 
 
 	urlGroup := e.Group("/url")
 
+	clicksGroup := e.Group("/clicks")
+
 	authRouter(authGroup, userHandler)
 
 	urlRoute(urlGroup, urlHandler)
+
+	clicksRoute(clicksGroup, clickHandler)
 
 	return &Server{
 		echo: e,
@@ -63,4 +68,8 @@ func authRouter(group *echo.Group, userHandler *auth_handler.Handler) {
 
 func urlRoute(group *echo.Group, urlHandler *url_handler.Handler) {
 	group.POST("/shorten/", urlHandler.ShortenURLHandler)
+}
+
+func clicksRoute(group *echo.Group, clickHandler *clicks_handler.Handler) {
+	group.GET("/:id", clickHandler.CreateClickHandler)
 }
