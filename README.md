@@ -1,6 +1,6 @@
 # URL Shortener
 
-![Coverage](https://img.shields.io/badge/coverage-68.0%30-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-67.4%30-brightgreen)
 
 This project is a URL shortener built with Go and Echo framework, utilizing MySQL for data storage.
 
@@ -126,7 +126,7 @@ The project is regularly scanned for security vulnerabilities using security too
 
 ## Code Coverage
 
-The project's test coverage is tracked using tools like Golang Codecov. The current code coverage percentage is 68.0%. 
+The project's test coverage is tracked using tools like Golang Codecov. The current code coverage percentage is 67.4%. 
 
 ## Contributing
 

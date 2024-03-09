@@ -1,6 +1,14 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.3.0 - 09/03/2024
+
+### Added
+
+- **URL Repository:** Added a URL repository to the project.
+
+- **URL Shorten API:** Added a new route to the echo server to handle URL shortening.
+
 ## 0.2.0.alpha.2 - 09/03/2024
 
 ### Added

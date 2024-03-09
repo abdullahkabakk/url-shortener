@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 	_ "net/http"
-	auth_handler "url-shortener/internal/app/handlers/auth"
+	"url-shortener/internal/app/handlers/auth"
+	"url-shortener/internal/app/handlers/url"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -18,7 +19,7 @@ type Server struct {
 }
 
 // NewServer creates a new instance of the HTTP server.
-func NewServer(host, port string, userHandler *auth_handler.Handler) *Server {
+func NewServer(host, port string, userHandler *auth_handler.Handler, urlHandler *url_handler.Handler) *Server {
 	e := echo.New()
 
 	// Middleware
@@ -27,7 +28,11 @@ func NewServer(host, port string, userHandler *auth_handler.Handler) *Server {
 
 	authGroup := e.Group("/auth")
 
+	urlGroup := e.Group("/url")
+
 	authRouter(authGroup, userHandler)
+
+	urlRoute(urlGroup, urlHandler)
 
 	return &Server{
 		echo: e,
@@ -50,4 +55,8 @@ func (s *Server) Shutdown(ctx context.Context) error {
 func authRouter(group *echo.Group, userHandler *auth_handler.Handler) {
 	group.POST("/register/", userHandler.CreateUserHandler)
 	group.POST("/login/", userHandler.LoginUserHandler)
+}
+
+func urlRoute(group *echo.Group, urlHandler *url_handler.Handler) {
+	group.POST("/shorten/", urlHandler.ShortenURLHandler)
 }
