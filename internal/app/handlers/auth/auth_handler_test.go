@@ -121,8 +121,9 @@ func TestLoginUserHandler(t *testing.T) {
 
 	t.Run("Should login auth", func(t *testing.T) {
 		// Create a new auth
-		err := userService.CreateUser(userData.Username, userData.Password)
+		user, err := userService.CreateUser(userData)
 		assert.NoError(t, err)
+		assert.NotNil(t, user)
 
 		// Prepare a mock echo.Context with valid request body
 		jsonData, _ := json.Marshal(userData)
@@ -194,8 +195,15 @@ func TestLoginUserHandler(t *testing.T) {
 
 	t.Run("Should return error for user named 'error_token'", func(t *testing.T) {
 		// Create user with username 'error_token'
-		err := userService.CreateUser("error_token", "password123")
+		invalidUser := user_model.User{
+			Username: "error_token",
+			Password: "password123",
+		}
+
+		user, err := userService.CreateUser(invalidUser)
 		assert.NoError(t, err)
+
+		assert.NotNil(t, user)
 
 		// Prepare a mock echo.Context with valid request body
 		userData.Username = "error_token"

@@ -1,6 +1,24 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.3.2 - 10/03/2024
+
+### Changed
+
+- **Auth Service Return Type:** Updated the return type of the auth service to return a pointer to the user model.
+  - ***Reason:*** This change was made to ensure that the token generation function can access the user ID.
+
+- **URL Parsing:** Added the URL parsing to use the `url.Parse` function.
+  - ***Reason:*** This change was made to ensure that the URL is parsed correctly.
+
+- **Gitignore:** Updated the `.gitignore` file to include the `migrations` file.
+
+### Docs
+
+- **Swagger Documentation:** Updated the swagger documentation to change url shortening endpoint
+
+- **README:** Updated the README file to include instructions on how to use the URL shortening endpoint.
+
 ## 0.3.1 - 09/03/2024
 
 ### Changed
