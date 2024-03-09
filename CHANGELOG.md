@@ -1,6 +1,14 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.2.0.alpha.1 - 09/03/2024
+
+### Added
+
+- **URL Handler:** Added a URL handler to the project.
+
+- **URL Model:** Added a URL model to the project.
+
 ## 0.2.0 - 09/03/2024
 
 ### Added
