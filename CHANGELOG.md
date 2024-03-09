@@ -1,6 +1,16 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.3.2.alpha.2 - 10/03/2024
+
+### Added
+
+- **Click Handler:** Added a click handler to the project.
+
+- **Mock Click Repository:** Added a mock click repository to the project.
+
+- **Click Repository:** Added a click repository to the project.
+
 ## 0.3.2.alpha.1 - 10/03/2024
 
 ### Added

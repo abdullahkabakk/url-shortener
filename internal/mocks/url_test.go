@@ -52,4 +52,10 @@ func TestMockUrlRepository_GetOriginalURL(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, url_model.ErrURLNotFound, err)
 	})
+
+	t.Run("Success - Invalid URL", func(t *testing.T) {
+		originalURL, err := repo.GetOriginalURL("invalid")
+		assert.NoError(t, err)
+		assert.Equal(t, "https://www.google.com", originalURL)
+	})
 }
