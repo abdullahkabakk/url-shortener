@@ -1,6 +1,17 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.3.1 - 09/03/2024
+
+### Changed
+
+- **CI/CD Pipeline:** Updated the CI/CD pipeline actions/go version @v2 to actions/setup-go@v5.
+  - **set-output:** Removed the set-output from the CI/CD pipeline used GITHUB_OUTPUT instead.
+
+- **Server Test:** Updated the server test with better assertions.
+
+- **`/`**: Updated the root route to return a welcome message.
+
 ## 0.3.0 - 09/03/2024
 
 ### Added

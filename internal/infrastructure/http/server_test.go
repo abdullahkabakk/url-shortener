@@ -2,7 +2,10 @@ package http
 
 import (
 	"context"
+	"errors"
 	"github.com/stretchr/testify/assert"
+	"io"
+	"net/http"
 	"os"
 	"testing"
 	"url-shortener/internal/app/handlers/auth"
@@ -13,32 +16,47 @@ import (
 	"url-shortener/internal/mocks"
 )
 
+// TestServer_StartAndShutdown tests the functionality of starting and shutting down the HTTP server.
 func TestServer_StartAndShutdown(t *testing.T) {
-	// Mock auth handler
-	mockUserRepository := mocks.NewMockUserRepository()
-
-	// Create a new instance of AuthService with the mock repository
-	userService := auth_service.NewAuthService(mockUserRepository)
-
-	tokenService := token_service.NewTokenService(os.Getenv("JWT_SECRET_KEY"))
-	mockUserHandler := auth_handler.NewAuthHandler(userService, tokenService)
-
+	// Setup
+	authService := auth_service.NewAuthService(mocks.NewMockUserRepository())
 	urlService := url_service.NewURLService(mocks.NewMockUrlRepository())
-	urlHandler := url_handler.NewURLHandler(urlService, tokenService)
+	tokenService := token_service.NewTokenService(os.Getenv("JWT_SECRET_KEY"))
+	userHandler := auth_handler.NewAuthHandler(authService, tokenService) // assuming NewHandler() creates a new instance
+	urlHandler := url_handler.NewURLHandler(urlService, tokenService)     // assuming NewHandler() creates a new instance
+	server := NewServer("localhost", "8080", userHandler, urlHandler)
 
-	// Create a new HTTP server
-	server := NewServer("localhost", "8080", mockUserHandler, urlHandler)
-
-	// Start the server
+	// Start server
 	go func() {
 		err := server.Start()
-		assert.NoError(t, err)
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			t.Errorf("server error: %v", err)
+			return
+		}
+	}()
+	defer func() {
+		err := server.Shutdown(context.Background())
+		if err != nil {
+			t.Fatalf("shutdown error: %v", err)
+		}
 	}()
 
-	// Create a context for graceful shutdown
-	ctx := context.Background()
+	// Test HTTP request to check server status
+	req, err := http.NewRequest("GET", "http://localhost:8080/", nil)
+	if err != nil {
+		t.Fatalf("failed to create request: %v", err)
+	}
 
-	// Shutdown the server
-	err := server.Shutdown(ctx)
-	assert.NoError(t, err)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			t.Fatalf("failed to close response body: %v", err)
+		}
+	}(resp.Body)
+
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }

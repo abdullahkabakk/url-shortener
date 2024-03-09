@@ -26,6 +26,10 @@ func NewServer(host, port string, userHandler *auth_handler.Handler, urlHandler 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	e.GET("/", func(c echo.Context) error {
+		return c.String(200, "Hello, World!")
+	})
+
 	authGroup := e.Group("/auth")
 
 	urlGroup := e.Group("/url")
