@@ -33,6 +33,39 @@ func (m *DBConnector) Connect(driverName string) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to ping MySQL: %v", err)
 	}
 
+	// Define migration queries
+	queries := []string{
+		`CREATE TABLE IF NOT EXISTS users (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			username VARCHAR(50) NOT NULL UNIQUE,
+			password VARCHAR(100) NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+			);`,
+		`CREATE TABLE IF NOT EXISTS urls (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			original_url TEXT NOT NULL,
+			shortened_url VARCHAR(10) NOT NULL UNIQUE,
+			user_id INT,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (user_id) REFERENCES users(id)
+			);`,
+		`CREATE TABLE IF NOT EXISTS clicks (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			url_id INT NOT NULL,
+			ip_address VARCHAR(50) NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (url_id) REFERENCES urls(id)
+			);`,
+	}
+
+	// Execute queries
+	for _, query := range queries {
+		_, err := db.Exec(query)
+		if err != nil {
+			return nil, fmt.Errorf("failed to execute query: %v", err)
+		}
+	}
+
 	return db, nil
 }
 
