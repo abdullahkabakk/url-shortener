@@ -3,13 +3,12 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/joho/godotenv/autoload"
 	"os"
 	"time"
 	"url-shortener/internal/config"
 	"url-shortener/internal/infrastructure/database"
 	"url-shortener/internal/infrastructure/http"
-
-	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -20,13 +19,6 @@ func main() {
 			time.Sleep(5 * time.Second) // Adjust the interval as needed
 		}
 	}()
-
-	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("[MAIN] Error loading .env file:", err)
-		return
-	}
 
 	// Create DBConnector with environment variables
 	connector := config.NewDBConnector()
