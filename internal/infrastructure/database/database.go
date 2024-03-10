@@ -25,12 +25,12 @@ func (m *DBConnector) Connect(driverName string) (*sql.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", m.Username, m.Password, m.Host, m.Port, m.DBName)
 	db, err := sql.Open(driverName, dsn)
 	if err != nil {
-		return nil, fmt.Errorf("[DB Connection] Failed to connect to MySQL: %w", err)
+		return nil, fmt.Errorf("[DB Connection] Failed to connect to Database: %w", err)
 	}
 
 	// Check if the connection is successful
 	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("failed to ping MySQL: %v", err)
+		return nil, fmt.Errorf("failed to ping Database: %v", err)
 	}
 
 	// Define migration queries
