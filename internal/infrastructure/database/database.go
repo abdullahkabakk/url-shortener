@@ -22,20 +22,24 @@ type DBConnector struct {
 
 // Connect establishes a connection to the MySQL database using the provided credentials and driver name.
 func (m *DBConnector) Connect(driverName string) (*sql.DB, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", m.Username, m.Password, m.Host, m.Port, m.DBName)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/", m.Username, m.Password, m.Host, m.Port)
 	db, err := sql.Open(driverName, dsn)
 	if err != nil {
 		return nil, fmt.Errorf("[DB Connection] Failed to connect to Database: %w", err)
 	}
 
-	// Check if the connection is successful
+	// Ping the database to ensure connection
 	if err := db.Ping(); err != nil {
 		return nil, fmt.Errorf("failed to ping Database: %v", err)
 	}
 
-	// Define migration queries
-	err = migrations(db)
-	if err != nil {
+	// Create tables if they don't exist
+	if err := createDatabase(db, m.DBName); err != nil {
+		return nil, fmt.Errorf("failed to create database: %v", err)
+	}
+
+	// Run migrations
+	if err := migrations(db); err != nil {
 		return nil, fmt.Errorf("failed to run migration queries: %v", err)
 	}
 
@@ -45,6 +49,26 @@ func (m *DBConnector) Connect(driverName string) (*sql.DB, error) {
 // ConnectToDB connects to the database using the provided connector and driver name.
 func ConnectToDB(connector Connector, driverName string) (*sql.DB, error) {
 	return connector.Connect(driverName)
+}
+
+func createDatabase(db *sql.DB, DBName string) error {
+	// Create database if it doesn't exist
+	_, err := db.Exec("CREATE DATABASE IF NOT EXISTS " + DBName)
+	if err != nil {
+		return fmt.Errorf("failed to create database: %v", err)
+	}
+
+	// Use the specified database
+	_, err = db.Exec("USE " + DBName)
+	if err != nil {
+		return fmt.Errorf("failed to use database: %v", err)
+	}
+
+	// Ping the database again after reconnecting
+	if err := db.Ping(); err != nil {
+		return fmt.Errorf("failed to ping Database after reconnect: %v", err)
+	}
+	return nil
 }
 
 func migrations(db *sql.DB) error {

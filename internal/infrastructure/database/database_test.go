@@ -115,3 +115,43 @@ func TestMigrations(t *testing.T) {
 		}
 	})
 }
+
+func TestCreateDatabase(t *testing.T) {
+	// Create a mock database connection
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("error creating mock database connection: %v", err)
+	}
+	defer db.Close()
+
+	t.Run("Create Database Successfully", func(t *testing.T) {
+		// Set up expectations for the mock database query to ensure that the database is created successfully
+		mock.ExpectExec("CREATE DATABASE IF NOT EXISTS test").WillReturnResult(sqlmock.NewResult(1, 1))
+		mock.ExpectExec("USE test").WillReturnResult(sqlmock.NewResult(1, 1))
+
+		// Call the createDatabase function
+		err := createDatabase(db, "test")
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+	})
+
+	t.Run("Failed to Create Database", func(t *testing.T) {
+		// Set up expectations for the mock database query to ensure that the database creation fails
+		mock.ExpectExec("CREATE DATABASE IF NOT EXISTS test").WillReturnError(fmt.Errorf("error"))
+
+		// Call the createDatabase function
+		err := createDatabase(db, "test")
+		assert.Error(t, err)
+	})
+
+	t.Run("Failed to Use Database", func(t *testing.T) {
+		// Set up expectations for the mock database query to ensure that the database usage fails
+		mock.ExpectExec("CREATE DATABASE IF NOT EXISTS test").WillReturnResult(sqlmock.NewResult(1, 1))
+		mock.ExpectExec("USE test").WillReturnError(fmt.Errorf("error"))
+
+		// Call the createDatabase function
+		err := createDatabase(db, "test")
+		assert.Error(t, err)
+	})
+}
