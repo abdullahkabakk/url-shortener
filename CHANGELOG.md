@@ -1,6 +1,12 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.6.0 - 11/03/2024
+
+### Added
+
+- **User's URL Endpoint:** Added a new route to the echo server to handle the user's URL.
+
 ## 0.5.1.alpha.2 - 11/03/2024
 
 ### Added

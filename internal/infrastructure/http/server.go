@@ -69,6 +69,7 @@ func authRouter(group *echo.Group, userHandler *auth_handler.Handler) {
 
 func urlRoute(group *echo.Group, urlHandler *url_handler.Handler) {
 	group.POST("/shorten/", urlHandler.ShortenURLHandler)
+	group.GET("/", urlHandler.GetUserUrlsHandler)
 }
 
 func clicksRoute(group *echo.Group, clickHandler *clicks_handler.Handler) {
