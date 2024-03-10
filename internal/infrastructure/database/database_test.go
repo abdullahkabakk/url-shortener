@@ -3,17 +3,13 @@ package database
 import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
 
 func TestMySQLConnection(t *testing.T) {
-	err := godotenv.Load("../../../.env")
-	if err != nil {
-		fmt.Println("Error loading .env file:", err)
-		return
-	}
 
 	t.Run("Connect to MySQL Database", func(t *testing.T) {
 		connector := &DBConnector{
@@ -44,6 +40,40 @@ func TestMySQLConnection(t *testing.T) {
 		if err == nil {
 			t.Errorf("Expected error, got nil")
 		}
+	})
+
+	t.Run("Failed to connect for non-existing database", func(t *testing.T) {
+		connector := &DBConnector{
+			Username: os.Getenv("DB_USERNAME"),
+			Password: os.Getenv("DB_PASSWORD"),
+			Host:     os.Getenv("DB_HOST"),
+			Port:     os.Getenv("DB_PORT"),
+			DBName:   "non-existing",
+		}
+
+		_, err := ConnectToDB(connector, "not-existing")
+
+		assert.Error(t, err)
+
+	})
+
+	t.Run("Failed to migrate", func(t *testing.T) {
+		// Create a mock database connection
+		db, mock, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("error creating mock database connection: %v", err)
+		}
+		defer db.Close()
+
+		// Set up expectations for the mock database query to ensure that the migration fails
+		mock.ExpectExec("CREATE TABLE IF NOT EXISTS users").WillReturnError(fmt.Errorf("error"))
+
+		// Call the migrations function
+		err = migrations(db)
+		if err == nil {
+			t.Error("expected an error, got nil")
+		}
+
 	})
 }
 
