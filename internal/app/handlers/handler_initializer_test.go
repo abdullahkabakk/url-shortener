@@ -14,7 +14,7 @@ func TestInitializeUserHandlers(t *testing.T) {
 
 	defer db.Close()
 
-	userHandler, err := InitializeUserHandlers(db)
+	userHandler := InitializeUserHandlers(db)
 
 	if err != nil {
 		t.Errorf("Error initializing auth handlers: %s", err)
@@ -36,7 +36,7 @@ func TestInitializeURLHandlers(t *testing.T) {
 
 	defer db.Close()
 
-	urlHandler, err := InitializeURLHandlers(db)
+	urlHandler := InitializeURLHandlers(db)
 
 	if err != nil {
 		t.Errorf("Error initializing URL handlers: %s", err)
@@ -58,7 +58,7 @@ func TestInitializeClickHandlers(t *testing.T) {
 
 	defer db.Close()
 
-	clickHandler, err := InitializeClickHandlers(db)
+	clickHandler := InitializeClickHandlers(db)
 
 	if err != nil {
 		t.Errorf("Error initializing click handlers: %s", err)

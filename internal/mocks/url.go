@@ -18,7 +18,7 @@ func NewMockUrlRepository() *MockUrlRepository {
 
 // CreateURL simulates creating a new url in the mock database.
 func (r *MockUrlRepository) CreateURL(originalUrl, shortCode string, userId *uint) (string, error) {
-	if originalUrl == "error" {
+	if originalUrl == "http://error.com" {
 		return "", url_model.ErrURLNotFound
 	}
 

@@ -20,7 +20,7 @@ func TestShortenURL(t *testing.T) {
 	})
 
 	t.Run("Should return error for invalid URL", func(t *testing.T) {
-		_, err := urlService.ShortenURL("error", nil)
+		_, err := urlService.ShortenURL("http://error.com", nil)
 		assert.Error(t, err)
 	})
 

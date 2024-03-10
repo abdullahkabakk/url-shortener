@@ -56,7 +56,7 @@ func TestShortenUrlHandler(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
-	t.Run("Invalid token", func(t *testing.T) {
+	t.Run("Invalid token header", func(t *testing.T) {
 		urlData := url_model.URL{
 			OriginalURL: "https://www.example.com",
 		}
@@ -72,6 +72,43 @@ func TestShortenUrlHandler(t *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, rec.Code)
 		assert.Contains(t, rec.Body.String(), "error")
 		assert.NoError(t, err)
+
+	})
+
+	t.Run("Invalid token", func(t *testing.T) {
+		urlData := url_model.URL{
+			OriginalURL: "https://www.example.com",
+		}
+		jsonData, _ := json.Marshal(urlData)
+		req := httptest.NewRequest(http.MethodPost, shortenEndpoint, bytes.NewReader(jsonData))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set("Authorization", "Bearer invalid")
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		err := mockHandler.ShortenURLHandler(c)
+
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+		assert.Contains(t, rec.Body.String(), "error")
+		assert.NoError(t, err)
+	})
+
+	t.Run("Invalid url", func(t *testing.T) {
+		urlData := url_model.URL{
+			OriginalURL: "http://error.com",
+		}
+		jsonData, _ := json.Marshal(urlData)
+		req := httptest.NewRequest(http.MethodPost, shortenEndpoint, bytes.NewReader(jsonData))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		err := mockHandler.ShortenURLHandler(c)
+
+		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+		assert.Contains(t, rec.Body.String(), "error")
+		assert.NoError(t, err)
+
 	})
 
 	t.Run("Valid token", func(t *testing.T) {
