@@ -4,17 +4,16 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
 
 func TestMySQLConnection(t *testing.T) {
-	err := godotenv.Load("../../../.env")
-	if err != nil {
-		fmt.Println("Error loading .env file")
-	}
+	//err := godotenv.Load("../../../.env")
+	//if err != nil {
+	//	fmt.Println("Error loading .env file")
+	//}
 	//
 	t.Run("Connect to MySQL Database", func(t *testing.T) {
 		connector := &DBConnector{
@@ -24,7 +23,7 @@ func TestMySQLConnection(t *testing.T) {
 			Port:     os.Getenv("DB_PORT"),
 			DBName:   os.Getenv("DB_NAME"),
 		}
-		
+
 		db, err := ConnectToDB(connector, "mysql")
 		assert.NoError(t, err)
 		assert.NotNil(t, db)
