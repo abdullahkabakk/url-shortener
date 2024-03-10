@@ -1,6 +1,12 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.6.1 - 11/03/2024
+
+### Changed
+
+- **Error handling:** Added error handling for create_url in tests
+
 ## 0.6.0 - 11/03/2024
 
 ### Added

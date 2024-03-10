@@ -58,7 +58,10 @@ func TestGetUserUrls(t *testing.T) {
 
 	t.Run("Get User URLs Successfully", func(t *testing.T) {
 		user := uint(1)
-		mockRepo.CreateURL("https://www.example.com", "abc123", &user)
+		_, err := mockRepo.CreateURL("https://www.example.com", "abc123", &user)
+		if err != nil {
+			return
+		}
 		urls, err := urlService.GetUserURLs(1)
 		if err != nil {
 			t.Errorf("Error: %s", err)

@@ -176,7 +176,10 @@ func TestUserUrlHandlers(t *testing.T) {
 		rec := httptest.NewRecorder()
 		c := echo.New().NewContext(req, rec)
 		user := uint(1)
-		mockRepository.CreateURL("https://www.example.com", "abc123", &user)
+		_, err := mockRepository.CreateURL("https://www.example.com", "abc123", &user)
+		if err != nil {
+			return
+		}
 		token, err := tokenService.GenerateToken(&user_model.User{ID: 1})
 		if err != nil {
 			return

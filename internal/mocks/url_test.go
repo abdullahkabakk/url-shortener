@@ -63,7 +63,10 @@ func TestMockUrlRepository_GetOriginalURL(t *testing.T) {
 func TestMockUrlRepository_GetUserUrls(t *testing.T) {
 	repo := NewMockUrlRepository()
 	userID := uint(1)
-	repo.CreateURL("https://www.example.com", "abc123", &userID)
+	_, err := repo.CreateURL("https://www.example.com", "abc123", &userID)
+	if err != nil {
+		return
+	}
 
 	t.Run("Success", func(t *testing.T) {
 		urls, err := repo.GetUserURLs(userID)
