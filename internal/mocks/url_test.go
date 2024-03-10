@@ -59,3 +59,24 @@ func TestMockUrlRepository_GetOriginalURL(t *testing.T) {
 		assert.Equal(t, "https://www.google.com", originalURL)
 	})
 }
+
+func TestMockUrlRepository_GetUserUrls(t *testing.T) {
+	repo := NewMockUrlRepository()
+	userID := uint(1)
+	_, err := repo.CreateURL("https://www.example.com", "abc123", &userID)
+	if err != nil {
+		return
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		urls, err := repo.GetUserURLs(userID)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, urls)
+	})
+
+	t.Run("Error - User not found", func(t *testing.T) {
+		urls, err := repo.GetUserURLs(2)
+		assert.Error(t, err)
+		assert.Empty(t, urls)
+	})
+}

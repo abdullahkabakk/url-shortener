@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	CreateURL(originalURL, shortCode string, userId *uint) (string, error)
 	GetOriginalURL(shortCode string) (string, error)
+	GetUserURLs(userID uint) ([]url_model.URL, error)
 }
 
 // DBURLRepository is an implementation of URLRepository for MySQL database.
@@ -84,4 +85,30 @@ func (r *DBURLRepository) GetOriginalURL(shortCode string) (string, error) {
 	}
 
 	return originalURL, nil
+}
+
+// GetUserURLs retrieves the URLs created by the given user.
+func (r *DBURLRepository) GetUserURLs(userID uint) ([]url_model.URL, error) {
+	// Prepare SQL statement
+	query := "SELECT * FROM urls WHERE user_id = ?"
+	rows, err := r.DB.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Initialize a slice to store the result
+	var urls []url_model.URL
+
+	// Iterate through the rows and scan the result into URL objects
+	for rows.Next() {
+		var u url_model.URL
+		err := rows.Scan(&u.ID, &u.OriginalURL, &u.ShortenedURL, &u.UserID, &u.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		urls = append(urls, u)
+	}
+
+	return urls, nil
 }

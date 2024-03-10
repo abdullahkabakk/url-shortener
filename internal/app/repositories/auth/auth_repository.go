@@ -63,7 +63,7 @@ func (r *DBAuthRepository) GetByUsername(username string) (*user_model.User, err
 	user := &user_model.User{}
 
 	// Scan the result into the User object
-	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.RegistrationDate)
+	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.CreatedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			// Return a custom error if the auth with the specified username is not found

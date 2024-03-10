@@ -191,6 +191,39 @@
         }
       },
     },
+    "/url/": {
+      "get": {
+        "summary": "Get User URLs",
+        "description": "Endpoint to get all URLs of the user.",
+        "security": [
+          {
+            "Authorization": [
+              "schema": "#/definitions/UserToken"
+            ],
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User URLs retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/URLData"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+    },
     "/clicks/{id}": {
       "get": {
         "summary": "Redirect to original URL",

@@ -113,16 +113,16 @@ func TestDBUserRepositoryGetByUsername(t *testing.T) {
 
 	t.Run("Get User Successfully", func(t *testing.T) {
 		expectedUser := &user_model.User{
-			ID:               1,
-			Username:         username,
-			Password:         "password123",
-			RegistrationDate: time.Now(),
+			ID:        1,
+			Username:  username,
+			Password:  "password123",
+			CreatedAt: time.Now(),
 		}
 
 		mock.ExpectQuery("SELECT id, username, password, created_at FROM users").
 			WithArgs(username).
 			WillReturnRows(sqlmock.NewRows([]string{"id", "username", "password", "created_at"}).
-				AddRow(expectedUser.ID, expectedUser.Username, expectedUser.Password, expectedUser.RegistrationDate))
+				AddRow(expectedUser.ID, expectedUser.Username, expectedUser.Password, expectedUser.CreatedAt))
 
 		user, err := repo.GetByUsername(username)
 

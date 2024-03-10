@@ -5,9 +5,11 @@ import (
 	_ "database/sql"
 	"database/sql/driver"
 	"errors"
+	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 	"url-shortener/internal/app/models/url"
 )
 
@@ -250,4 +252,124 @@ func TestDBUrlRepositoryRowsAffected(t *testing.T) {
 		assert.Equal(t, "no rows affected, insertion failed", err.Error())
 		assert.Empty(t, createdShortCode)
 	})
+}
+
+func TestDBURLRepository_GetUserURLs(t *testing.T) {
+
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	repo := NewDBURLRepository(db)
+
+	t.Run("Failed to Prepare SQL Statement", func(t *testing.T) {
+		userID := uint(1)
+
+		mock.ExpectPrepare("SELECT * FROM urls").
+			WillReturnError(errors.New("prepare error"))
+
+		urls, err := repo.GetUserURLs(userID)
+
+		assert.Error(t, err)
+		assert.Empty(t, urls)
+	})
+
+	t.Run("Failed to Execute SQL Statement", func(t *testing.T) {
+		userID := uint(1)
+
+		mock.ExpectQuery("SELECT * FROM urls").
+			WithArgs(userID).
+			WillReturnError(errors.New("execute error"))
+
+		urls, err := repo.GetUserURLs(userID)
+
+		assert.Error(t, err)
+		assert.Empty(t, urls)
+	})
+
+	t.Run("No Rows Returned", func(t *testing.T) {
+		userID := uint(1)
+
+		mock.ExpectQuery("SELECT * FROM urls").
+			WithArgs(userID).
+			WillReturnRows(sqlmock.NewRows([]string{"original_url", "shortened_url"}))
+
+		urls, err := repo.GetUserURLs(userID)
+
+		assert.Error(t, err)
+		assert.Empty(t, urls)
+	})
+
+}
+
+func TestReturnSuccessfulUrlReturn(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	repo := NewDBURLRepository(db)
+
+	t.Run("Create URL Successfully", func(t *testing.T) {
+
+		// Define the expected SQL query and results
+		expectedUserID := uint(1)
+		expectedRows := sqlmock.NewRows([]string{"id", "original_url", "shortened_url", "user_id", "created_at"}).
+			AddRow(1, "http://example.com", "http://short.com", expectedUserID, time.Now()).
+			AddRow(2, "http://example2.com", "http://short2.com", expectedUserID, time.Now())
+
+		// Expect the query with the given user ID
+		mock.ExpectQuery("SELECT \\* FROM urls WHERE user_id = \\?").WithArgs(expectedUserID).WillReturnRows(expectedRows)
+
+		// Call the function to be tested
+		urls, err := repo.GetUserURLs(expectedUserID)
+		if err != nil {
+			t.Errorf("error was not expected while fetching user URLs: %s", err)
+		}
+
+		// Check if the returned URLs match the expected ones
+		expectedURLs := []url_model.URL{
+			{ID: 1, OriginalURL: "http://example.com", ShortenedURL: "http://short.com"},
+			{ID: 2, OriginalURL: "http://example2.com", ShortenedURL: "http://short2.com"},
+		}
+		if len(urls) != len(expectedURLs) {
+			t.Errorf("expected %d URLs, got %d", len(expectedURLs), len(urls))
+		}
+
+		for i, u := range urls {
+			if u.ID != expectedURLs[i].ID || u.OriginalURL != expectedURLs[i].OriginalURL || u.ShortenedURL != expectedURLs[i].ShortenedURL {
+				t.Errorf("expected URL %d to be %+v, got %+v", i+1, expectedURLs[i], u)
+			}
+		}
+
+		// Check if all expected calls were made
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
+	})
+
+	t.Run("Row Scan Error", func(t *testing.T) {
+		// Define the expected user ID
+		expectedUserID := uint(1)
+
+		// Expect the query with the given user ID
+		mockRows := sqlmock.NewRows([]string{"id", "original_url", "shortened_url"}).
+			AddRow(1, "http://example.com", "http://short.com").
+			AddRow(2, "http://example2.com", "http://short2.com").
+			RowError(0, fmt.Errorf("error scanning row"))
+
+		mock.ExpectQuery("SELECT \\* FROM urls WHERE user_id = \\?").WithArgs(expectedUserID).WillReturnRows(mockRows).WillReturnError(fmt.Errorf("error"))
+
+		// Call the function to be tested
+		urls, err := repo.GetUserURLs(expectedUserID)
+
+		assert.Error(t, err)
+
+		assert.Empty(t, urls)
+
+	})
+
 }

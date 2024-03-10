@@ -152,3 +152,87 @@ func TestShortenUrlHandler(t *testing.T) {
 	})
 
 }
+
+func TestUserUrlHandlers(t *testing.T) {
+	mockRepository := mocks.NewMockUrlRepository()
+	mockService := url_service.NewURLService(mockRepository)
+	tokenService := mocks.NewMockTokenService()
+	mockHandler := NewURLHandler(mockService, tokenService)
+
+	t.Run("Should return error if token is not provided", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, urlEndpoint, nil)
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		err := mockHandler.GetUserUrlsHandler(c)
+
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+		assert.Contains(t, rec.Body.String(), "error")
+		assert.NoError(t, err)
+	})
+
+	t.Run("Should return user urls", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, urlEndpoint, nil)
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+		user := uint(1)
+		_, err := mockRepository.CreateURL("https://www.example.com", "abc123", &user)
+		if err != nil {
+			return
+		}
+		token, err := tokenService.GenerateToken(&user_model.User{ID: 1})
+		if err != nil {
+			return
+		}
+		req.Header.Set("Authorization", "Bearer "+token)
+
+		err = mockHandler.GetUserUrlsHandler(c)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Should return error for user not having any urls", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, urlEndpoint, nil)
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+		token, err := tokenService.GenerateToken(&user_model.User{ID: 2})
+		if err != nil {
+			return
+		}
+		req.Header.Set("Authorization", "Bearer "+token)
+
+		err = mockHandler.GetUserUrlsHandler(c)
+
+		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+		assert.Contains(t, rec.Body.String(), "error")
+		assert.NoError(t, err)
+
+	})
+
+	t.Run("Should return error for invalid token", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, urlEndpoint, nil)
+		req.Header.Set("Authorization", "invalid")
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		err := mockHandler.GetUserUrlsHandler(c)
+
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+		assert.Contains(t, rec.Body.String(), "error")
+		assert.NoError(t, err)
+	})
+
+	t.Run("Should return error for invalid token", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, urlEndpoint, nil)
+		req.Header.Set("Authorization", "Bearer invalid")
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		err := mockHandler.GetUserUrlsHandler(c)
+
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+		assert.Contains(t, rec.Body.String(), "error")
+		assert.NoError(t, err)
+	})
+}

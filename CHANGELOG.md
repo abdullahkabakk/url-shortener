@@ -1,6 +1,40 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.6.1 - 11/03/2024
+
+### Changed
+
+- **Error handling:** Added error handling for create_url in tests
+
+## 0.6.0 - 11/03/2024
+
+### Added
+
+- **User's URL Endpoint:** Added a new route to the echo server to handle the user's URL.
+
+## 0.5.1.alpha.2 - 11/03/2024
+
+### Added
+
+- **Get User URL Functionality:** Added functionality to retrieve the user's URL.
+
+- **Mock URL Repository:** Added a mock URL repository to the project.
+
+## 0.5.1.alpha.1 - 11/03/2024
+
+### Added
+
+- **Get User URL Test:** Added a test to ensure that the user's URL is retrieved.
+
+### Changed
+
+- **Parse Time:** Updated the parse time for database.
+
+- **Renamed RegistrationDate to CreatedAt:** Renamed the `registration_date` field to `created_at` in the user model.
+
+- **Renamed CreationDate to CreatedAt:** Renamed the `creation_date` field to `created_at` in the click model.
+
 ## 0.5.1 - 10/03/2024
 
 ### Added
