@@ -1,6 +1,16 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.5.1 - 10/03/2024
+
+### Added
+
+- **Empty Token Test:** Added a test to ensure that empty token are not sent to the server.
+
+### Changed
+
+- **Refactored Auth Repository Test:** Refactored the auth repository test to use the testify library for better assertions.
+
 ## 0.5.0 - 10/03/2024
 
 ### Added

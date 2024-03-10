@@ -275,6 +275,23 @@ func TestRefreshTokenHandler(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
+	t.Run("Should return error for empty token", func(t *testing.T) {
+		// Prepare a mock echo.Context with valid request body
+		req := httptest.NewRequest(http.MethodPost, userEndpoint+"refresh/", nil)
+		req.Header.Set(echo.HeaderAuthorization, "")
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call RefreshTokenHandler
+		err := userHandler.RefreshTokenHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+		assert.Contains(t, rec.Body.String(), `{"error":"Token is required"}`)
+		assert.NoError(t, err)
+
+	})
+
 	t.Run("Should return error for expired token", func(t *testing.T) {
 		// Prepare a mock echo.Context with valid request body
 		req := httptest.NewRequest(http.MethodPost, userEndpoint+"refresh/", nil)

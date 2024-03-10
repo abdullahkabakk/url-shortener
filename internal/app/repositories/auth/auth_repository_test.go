@@ -119,9 +119,9 @@ func TestDBUserRepositoryGetByUsername(t *testing.T) {
 			RegistrationDate: time.Now(),
 		}
 
-		mock.ExpectQuery("SELECT id, username, password, registration_date FROM users").
+		mock.ExpectQuery("SELECT id, username, password, created_at FROM users").
 			WithArgs(username).
-			WillReturnRows(sqlmock.NewRows([]string{"id", "username", "password", "registration_date"}).
+			WillReturnRows(sqlmock.NewRows([]string{"id", "username", "password", "created_at"}).
 				AddRow(expectedUser.ID, expectedUser.Username, expectedUser.Password, expectedUser.RegistrationDate))
 
 		user, err := repo.GetByUsername(username)
@@ -133,7 +133,7 @@ func TestDBUserRepositoryGetByUsername(t *testing.T) {
 	})
 
 	t.Run("Failed to Get User (No Rows Returned)", func(t *testing.T) {
-		mock.ExpectQuery("SELECT id, username, password, registration_date FROM users").
+		mock.ExpectQuery("SELECT id, username, password, created_at FROM users").
 			WithArgs(username).
 			WillReturnError(sql.ErrNoRows)
 
@@ -146,9 +146,9 @@ func TestDBUserRepositoryGetByUsername(t *testing.T) {
 	})
 
 	t.Run("Failed to Get User (Scan Error)", func(t *testing.T) {
-		mock.ExpectQuery("SELECT id, username, password, registration_date FROM users").
+		mock.ExpectQuery("SELECT id, username, password, created_at FROM users").
 			WithArgs(username).
-			WillReturnRows(sqlmock.NewRows([]string{"id", "username", "password", "registration_date"}).
+			WillReturnRows(sqlmock.NewRows([]string{"id", "username", "password", "created_at"}).
 				AddRow(nil, nil, nil, nil))
 
 		user, err := repo.GetByUsername(username)

@@ -72,25 +72,27 @@ func (h *Handler) RefreshTokenHandler(c echo.Context) error {
 	// Extract token from request headers or cookies
 	token := c.Request().Header.Get("Authorization")
 
+	if token == "" {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Token is required"})
+	}
+
 	// Initialize userID to nil
 	var userID *uint
 	// If token is provided, validate it and get the user ID
-	if token != "" {
-		parts := strings.Fields(token)
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
-		}
-		token = parts[1]
-		// Call the authentication service to validate the token and get the user ID
-		id, err := h.TokenRepository.ValidateToken(token)
-		if err != nil {
-			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
-		}
-		userID = &id
+	parts := strings.Fields(token)
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
 	}
+	token = parts[1]
+	// Call the authentication service to validate the token and get the user ID
+	id, err := h.TokenRepository.ValidateToken(token)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
+	}
+	userID = &id
 
 	// Generate a new token for the authenticated auth
-	token, err := h.TokenRepository.GenerateToken(&user_model.User{ID: *userID})
+	token, err = h.TokenRepository.GenerateToken(&user_model.User{ID: *userID})
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
