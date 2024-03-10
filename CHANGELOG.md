@@ -1,6 +1,14 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.5.1.alpha.2 - 11/03/2024
+
+### Added
+
+- **Get User URL Functionality:** Added functionality to retrieve the user's URL.
+
+- **Mock URL Repository:** Added a mock URL repository to the project.
+
 ## 0.5.1.alpha.1 - 11/03/2024
 
 ### Added

@@ -36,6 +36,15 @@ func TestMockTokenService_GenerateToken(t *testing.T) {
 		assert.Equal(t, url_model.ErrInvalidToken, err)
 
 	})
+
+	t.Run("User with ID 2", func(t *testing.T) {
+		user := &user_model.User{ID: 2}
+		token, err := mockTokenService.GenerateToken(user)
+
+		assert.NoError(t, err)
+		assert.Equal(t, "2", token)
+
+	})
 }
 
 func TestMockTokenService_ValidateToken(t *testing.T) {
@@ -60,5 +69,12 @@ func TestMockTokenService_ValidateToken(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.Zero(t, userID)
+	})
+
+	t.Run("Valid Token", func(t *testing.T) {
+		userID, err := mockTokenService.ValidateToken("mockToken")
+
+		assert.NoError(t, err)
+		assert.Equal(t, uint(1), userID)
 	})
 }
