@@ -63,6 +63,11 @@ jobs:
       - name: Display DB_NAME
         run: echo $DB_NAME
 
+      - name: Start MySQL
+        run: |
+          sudo systemctl start mysql
+          mysql -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;" -u$DB_USERNAME -p$DB_PASSWORD
+
       - name: Run Tests with Code Coverage
         run: go test ./... -covermode=count -coverpkg=./... -v -coverprofile=coverage.out
 
