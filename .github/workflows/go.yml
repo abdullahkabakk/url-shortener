@@ -45,6 +45,7 @@ jobs:
 
       - name: Update README.md with Vulnerability Count
         run: sed -i "s/X/${{ env.VULNERABILITY_COUNT }}/g" README.md
+
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -75,8 +76,8 @@ jobs:
 
       - name: Start MySQL
         run: |
-          sudo systemctl start mysql
-          mysql -h $DB_HOST --port $DB_PORT -u $DB_USERNAME -p $DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
+          sudo /etc/init.d/mysql start
+          mysql -e 'CREATE DATABASE IF NOT EXISTS ${{ secrets.DB_NAME }};' -u${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }}
 
       - name: Run Tests with Code Coverage
         run: go test ./... -covermode=count -coverpkg=./... -v -coverprofile=coverage.out
