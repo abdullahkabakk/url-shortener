@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/joho/godotenv"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -10,6 +11,10 @@ import (
 )
 
 func TestMySQLConnection(t *testing.T) {
+	err := godotenv.Load("../../../.env")
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
 
 	t.Run("Connect to MySQL Database", func(t *testing.T) {
 		connector := &DBConnector{
@@ -21,9 +26,8 @@ func TestMySQLConnection(t *testing.T) {
 		}
 
 		db, err := ConnectToDB(connector, "mysql")
-		if err != nil {
-			return
-		}
+		assert.NotNil(t, db)
+		assert.NoError(t, err)
 		defer db.Close()
 	})
 
