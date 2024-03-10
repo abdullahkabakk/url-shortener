@@ -56,17 +56,11 @@ jobs:
 
       - name: Run Tests with Code Coverage
         run: go test ./... -covermode=count -coverpkg=./... -v -coverprofile=coverage.out
-
-      - name: Parse Coverage Percentage
-        run: |
-          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
-          echo "coverage=${COVERAGE}" >> $GITHUB_OUTPUT
-
-      - name: Set Code Coverage
-        run: echo "CODE_COVERAGE=${{ steps.parse_coverage.outputs.coverage }}" >> $GITHUB_ENV
-
-      - name: Update README.md with Code Coverage
-        run: sed -i "s/Y/${{ env.CODE_COVERAGE }}/g" README.md
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: abdullahkabakk/url-shortener
 
   build:
     name: Build

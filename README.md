@@ -1,6 +1,12 @@
 # URL Shortener
 
-![Coverage](https://img.shields.io/badge/coverage-84.4%30-darkgreen)
+[![codecov](https://codecov.io/github/abdullahkabakk/url-shortener/graph/badge.svg?token=EX5NB794NE)](https://codecov.io/github/abdullahkabakk/url-shortener)
+[![Go Report Card](https://goreportcard.com/badge/github.com/abdullahkabakk/url-shortener)](https://goreportcard.com/report/github.com/abdullahkabakk/url-shortener)
+[![Build](https://github.com/abdullahkabakk/url-shortener/actions/workflows/go.yml/badge.svg)](https://github.com/abdullahkabakk/url-shortener/actions/workflows/go.yml)
+[![Coverage](https://img.shields.io/codecov/c/github/abdullahkabakk/url-shortener)](https://codecov.io/github/abdullahkabakk/url-shortener)
+[![Code Style](https://img.shields.io/badge/code%20style-gofmt-%2300ADD8)](https://golang.org/doc/effective_go.html#formatting)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/abdullahkabakk/url-shortener/blob/main/LICENSE)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/abdullahkabakk/url-shortener)](https://golang.org/doc/devel/release.html)
 
 This project is a URL shortener built with Go and Echo framework, utilizing MySQL for data storage.
 
@@ -18,7 +24,6 @@ Feel free to check the initial design of the database schema [here](https://dbdo
 - [Commit Tag Meanings](#commit-tag-meanings)
 - [Changelog](#changelog)
 - [Security](#security)
-- [Code Coverage](#code-coverage)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -195,10 +200,6 @@ All significant updates to this project will be meticulously documented in this 
 ## Security
 
 The project is regularly scanned for security vulnerabilities using security tools like Gosec. The current number of security vulnerabilities detected is 0.
-
-## Code Coverage
-
-The project's test coverage is tracked using tools like Golang Codecov. The current code coverage percentage is 84.4%. 
 
 ## Contributing
 
