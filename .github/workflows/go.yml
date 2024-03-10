@@ -56,6 +56,16 @@ jobs:
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_PORT: ${{ secrets.DB_PORT }}
       JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+    services:
+        mysql:
+          image: mysql:8.0
+          env:
+            MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+            MYSQL_DATABASE: ${{ secrets.DB_NAME }}
+          ports:
+            - '3306:3306'
+          options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -66,7 +76,7 @@ jobs:
       - name: Start MySQL
         run: |
           sudo systemctl start mysql
-          mysql -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;" -u$DB_USERNAME -p$DB_PASSWORD
+          mysql -h $DB_HOST --port $DB_PORT -u $DB_USERNAME -p $DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
 
       - name: Run Tests with Code Coverage
         run: go test ./... -covermode=count -coverpkg=./... -v -coverprofile=coverage.out
