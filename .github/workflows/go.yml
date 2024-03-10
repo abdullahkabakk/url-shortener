@@ -97,3 +97,9 @@ jobs:
       - name: Build App
         run: |
           go build -v ./...
+
+      - name: Archive Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: ./
