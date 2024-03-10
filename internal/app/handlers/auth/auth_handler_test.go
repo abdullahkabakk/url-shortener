@@ -223,3 +223,54 @@ func TestLoginUserHandler(t *testing.T) {
 
 	})
 }
+
+func TestRefreshTokenHandler(t *testing.T) {
+	// Create mock user repository and service
+	userRepository := mocks.NewMockUserRepository()
+	userService := auth_service.NewAuthService(userRepository)
+	tokenService := mocks.NewMockTokenService()
+	userHandler := NewAuthHandler(userService, tokenService)
+
+	// Define test user data
+	userData := user_model.User{
+		Username: "testuser",
+		Password: "password123",
+	}
+
+	t.Run("Should refresh token", func(t *testing.T) {
+		// Create a new auth
+		user, err := userService.CreateUser(userData)
+		assert.NoError(t, err)
+		assert.NotNil(t, user)
+
+		// Prepare a mock echo.Context with valid request body
+		req := httptest.NewRequest(http.MethodPost, userEndpoint+"refresh/", nil)
+		req.Header.Set(echo.HeaderAuthorization, "Bearer valid_token")
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call RefreshTokenHandler
+		err = userHandler.RefreshTokenHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Contains(t, rec.Body.String(), "token")
+		assert.NoError(t, err)
+	})
+
+	t.Run("Should return error for invalid token", func(t *testing.T) {
+		// Prepare a mock echo.Context with valid request body
+		req := httptest.NewRequest(http.MethodPost, userEndpoint+"refresh/", nil)
+		req.Header.Set(echo.HeaderAuthorization, "Bearer invalid_token")
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call RefreshTokenHandler
+		err := userHandler.RefreshTokenHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+		assert.Contains(t, rec.Body.String(), "invalid token")
+		assert.NoError(t, err)
+	})
+}

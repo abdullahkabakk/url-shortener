@@ -1,6 +1,16 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.4.1.alpha.1 - 10/03/2024
+
+### Added
+
+- **Refresh Token Test:** Added a test to ensure that the refresh token is generated.
+
+### Docs
+
+- **Postman Collection:** Added a postman collection to the project.
+
 ## 0.4.1 - 10/03/2024
 
 ### Changed
