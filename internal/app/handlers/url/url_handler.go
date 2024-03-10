@@ -1,7 +1,6 @@
 package url_handler
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"net/url"
@@ -30,7 +29,6 @@ func (h *Handler) ShortenURLHandler(c echo.Context) error {
 
 	// Initialize userID to nil
 	var userID *uint
-	fmt.Println("token", token)
 	// If token is provided, validate it and get the user ID
 	if token != "" {
 		parts := strings.Fields(token)

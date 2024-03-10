@@ -3,6 +3,7 @@ package auth_handler
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -261,7 +262,7 @@ func TestRefreshTokenHandler(t *testing.T) {
 	t.Run("Should return error for invalid token", func(t *testing.T) {
 		// Prepare a mock echo.Context with valid request body
 		req := httptest.NewRequest(http.MethodPost, userEndpoint+"refresh/", nil)
-		req.Header.Set(echo.HeaderAuthorization, "Bearer invalid_token")
+		req.Header.Set(echo.HeaderAuthorization, "Bearer invalid")
 		rec := httptest.NewRecorder()
 		c := echo.New().NewContext(req, rec)
 
@@ -270,7 +271,42 @@ func TestRefreshTokenHandler(t *testing.T) {
 
 		// Check the response
 		assert.Equal(t, http.StatusUnauthorized, rec.Code)
-		assert.Contains(t, rec.Body.String(), "invalid token")
+		assert.Contains(t, rec.Body.String(), `{"error":"Invalid token"}`)
 		assert.NoError(t, err)
 	})
+
+	t.Run("Should return error for expired token", func(t *testing.T) {
+		// Prepare a mock echo.Context with valid request body
+		req := httptest.NewRequest(http.MethodPost, userEndpoint+"refresh/", nil)
+		req.Header.Set(echo.HeaderAuthorization, "Bearer expired")
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call RefreshTokenHandler
+		err := userHandler.RefreshTokenHandler(c)
+
+		fmt.Println(err)
+		fmt.Println(rec.Body.String())
+		// Check the response
+		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+		assert.Contains(t, rec.Body.String(), `{"error":"invalid token"}`)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Should return error for non-existing user", func(t *testing.T) {
+		// Prepare a mock echo.Context with valid request body
+		req := httptest.NewRequest(http.MethodPost, userEndpoint+"refresh/", nil)
+		req.Header.Set(echo.HeaderAuthorization, "NotExisting nonexisting")
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call RefreshTokenHandler
+		err := userHandler.RefreshTokenHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+		assert.Contains(t, rec.Body.String(), `{"error":"Invalid token"}`)
+		assert.NoError(t, err)
+	})
+
 }

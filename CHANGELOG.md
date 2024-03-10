@@ -1,6 +1,19 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.4.1.alpha.2 - 10/03/2024
+
+### Added
+
+- **Auth Handler:** Added a new handler to handle refresh token requests. 
+
+### Changed
+
+- **Auth Query:** Updated the auth query from `registration_date` to `created_at`.
+  - ***Reason:*** This change was made to ensure that the correct field is used to store the registration date.
+  - ***Impact:*** This change will affect the database schema and the auth repository.
+- **Console Log:** Removed console logs from url_handler
+
 ## 0.4.1.alpha.1 - 10/03/2024
 
 ### Added
