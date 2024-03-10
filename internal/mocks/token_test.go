@@ -3,6 +3,7 @@ package mocks
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
+	url_model "url-shortener/internal/app/models/url"
 	"url-shortener/internal/app/models/user"
 )
 
@@ -35,5 +36,13 @@ func TestMockTokenService_ValidateToken(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.Equal(t, uint(123), userID)
+	})
+
+	t.Run("Invalid Token", func(t *testing.T) {
+		userID, err := mockTokenService.ValidateToken("invalid")
+
+		assert.Error(t, err)
+		assert.Equal(t, url_model.ErrInvalidToken, err)
+		assert.Zero(t, userID)
 	})
 }

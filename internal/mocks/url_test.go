@@ -25,7 +25,7 @@ func TestMockUrlRepository_CreateURL(t *testing.T) {
 		assert.Equal(t, url_model.ErrShortCodeAlreadyExists, err)
 	})
 	t.Run("Error- Should return error if URL is 'error'", func(t *testing.T) {
-		_, err := repo.CreateURL("error", "error", nil)
+		_, err := repo.CreateURL("http://error.com", "error", nil)
 		assert.Error(t, err)
 		assert.Equal(t, url_model.ErrURLNotFound, err)
 

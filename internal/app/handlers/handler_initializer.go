@@ -16,25 +16,25 @@ import (
 )
 
 // InitializeUserHandlers initializes all the auth handlers.
-func InitializeUserHandlers(db *sql.DB) (*auth_handler.Handler, error) {
+func InitializeUserHandlers(db *sql.DB) *auth_handler.Handler {
 	userRepository := auth_repository.NewDBAuthRepository(db)
 	userService := auth_service.NewAuthService(userRepository)
 	tokenService := token_service.NewTokenService(os.Getenv("JWT_SECRET_KEY"))
 	userHandler := auth_handler.NewAuthHandler(userService, tokenService)
-	return userHandler, nil
+	return userHandler
 }
 
 // InitializeURLHandlers initializes all the URL handlers.
-func InitializeURLHandlers(db *sql.DB) (*url_handler.Handler, error) {
+func InitializeURLHandlers(db *sql.DB) *url_handler.Handler {
 	urlRepository := url_repository.NewDBURLRepository(db)
 	urlService := url_service.NewURLService(urlRepository)
 	tokenService := token_service.NewTokenService(os.Getenv("JWT_SECRET_KEY"))
 	urlHandler := url_handler.NewURLHandler(urlService, tokenService)
-	return urlHandler, nil
+	return urlHandler
 }
 
 // InitializeClickHandlers initializes all the click handlers.
-func InitializeClickHandlers(db *sql.DB) (*clicks_handler.Handler, error) {
+func InitializeClickHandlers(db *sql.DB) *clicks_handler.Handler {
 	clickRepository := clicks_repository.NewDBClicksRepository(db)
 
 	urlRepository := url_repository.NewDBURLRepository(db)
@@ -42,5 +42,5 @@ func InitializeClickHandlers(db *sql.DB) (*clicks_handler.Handler, error) {
 
 	clickService := clicks_service.NewClicksService(clickRepository)
 	clickHandler := clicks_handler.NewClickHandler(clickService, urlService)
-	return clickHandler, nil
+	return clickHandler
 }

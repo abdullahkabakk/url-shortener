@@ -34,6 +34,21 @@ func (m *DBConnector) Connect(driverName string) (*sql.DB, error) {
 	}
 
 	// Define migration queries
+	err = migrations(db)
+	if err != nil {
+		return nil, fmt.Errorf("failed to run migration queries: %v", err)
+	}
+
+	return db, nil
+}
+
+// ConnectToDB connects to the database using the provided connector and driver name.
+func ConnectToDB(connector Connector, driverName string) (*sql.DB, error) {
+	return connector.Connect(driverName)
+}
+
+func migrations(db *sql.DB) error {
+	// Define migration queries
 	queries := []string{
 		`CREATE TABLE IF NOT EXISTS users (
 			id INT AUTO_INCREMENT PRIMARY KEY,
@@ -62,14 +77,9 @@ func (m *DBConnector) Connect(driverName string) (*sql.DB, error) {
 	for _, query := range queries {
 		_, err := db.Exec(query)
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute query: %v", err)
+			return fmt.Errorf("failed to execute query: %v", err)
 		}
 	}
 
-	return db, nil
-}
-
-// ConnectToDB connects to the database using the provided connector and driver name.
-func ConnectToDB(connector Connector, driverName string) (*sql.DB, error) {
-	return connector.Connect(driverName)
+	return nil
 }

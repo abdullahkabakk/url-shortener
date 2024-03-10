@@ -1,6 +1,12 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.4.1 - 10/03/2024
+
+### Changed
+
+- **Refactored tests:** Refactored the tests to use the `testify` library for better assertions.
+
 ## 0.4.0 - 10/03/2024
 
 ### Added

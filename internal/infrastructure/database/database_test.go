@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/joho/godotenv"
 	"os"
 	"testing"
@@ -42,6 +43,41 @@ func TestMySQLConnection(t *testing.T) {
 		_, err := ConnectToDB(connector, "mysql")
 		if err == nil {
 			t.Errorf("Expected error, got nil")
+		}
+	})
+}
+
+func TestMigrations(t *testing.T) {
+	// Create a mock database connection
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("error creating mock database connection: %v", err)
+	}
+	defer db.Close()
+
+	t.Run("Migrate Successfully", func(t *testing.T) {
+		// Set up expectations for the mock database query to ensure that the migration is successful
+		mock.ExpectExec("CREATE TABLE IF NOT EXISTS users").WillReturnResult(sqlmock.NewResult(1, 1))
+
+		mock.ExpectExec("CREATE TABLE IF NOT EXISTS urls").WillReturnResult(sqlmock.NewResult(1, 1))
+
+		mock.ExpectExec("CREATE TABLE IF NOT EXISTS clicks").WillReturnResult(sqlmock.NewResult(1, 1))
+
+		// Call the migrations function
+		err = migrations(db)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+	})
+
+	t.Run("Failed to Migrate", func(t *testing.T) {
+		// Set up expectations for the mock database query to ensure that the migration fails
+		mock.ExpectExec("CREATE TABLE IF NOT EXISTS users").WillReturnError(fmt.Errorf("error"))
+
+		// Call the migrations function
+		err = migrations(db)
+		if err == nil {
+			t.Error("expected an error, got nil")
 		}
 	})
 }

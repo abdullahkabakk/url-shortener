@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-	"url-shortener/internal/app/handlers"
 	"url-shortener/internal/config"
 	"url-shortener/internal/infrastructure/database"
 	"url-shortener/internal/infrastructure/http"
@@ -49,35 +48,8 @@ func main() {
 
 	fmt.Println("[DATABASE] Connected to database")
 
-	// Run migrations
-	//migrationsDir := os.Getenv("MIGRATIONS_DIR")
-	//err = migrations.RunMigrations(db, migrationsDir)
-	//if err != nil {
-	//	fmt.Println("[MAIN] Error running migrations:", err)
-	//	return
-	//}
-
 	// Create auth handler
-	userHandler, err := handlers.InitializeUserHandlers(db)
-	if err != nil {
-		fmt.Println("[MAIN] Error initializing auth handlers:", err)
-		return
-	}
-
-	urlHandler, err := handlers.InitializeURLHandlers(db)
-
-	if err != nil {
-		fmt.Println("[MAIN] Error initializing auth handlers:", err)
-		return
-	}
-
-	clicksHandler, err := handlers.InitializeClickHandlers(db)
-
-	if err != nil {
-		fmt.Println("[MAIN] Error initializing auth handlers:", err)
-		return
-
-	}
+	userHandler, urlHandler, clicksHandler := initializeHandlers(db)
 
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
