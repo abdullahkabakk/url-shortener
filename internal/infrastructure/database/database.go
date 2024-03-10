@@ -22,7 +22,7 @@ type DBConnector struct {
 
 // Connect establishes a connection to the MySQL database using the provided credentials and driver name.
 func (m *DBConnector) Connect(driverName string) (*sql.DB, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/", m.Username, m.Password, m.Host, m.Port)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/?parseTime=true", m.Username, m.Password, m.Host, m.Port)
 	db, err := sql.Open(driverName, dsn)
 	if err != nil {
 		return nil, fmt.Errorf("[DB Connection] Failed to connect to Database: %w", err)

@@ -16,5 +16,5 @@ type URL struct {
 	OriginalURL  string    `json:"original_url"`
 	ShortenedURL string    `json:"shortened_url"`
 	UserID       uint      `json:"user_id"`
-	CreationDate time.Time `json:"creation_date"`
+	CreatedAt    time.Time `json:"created_at"`
 }

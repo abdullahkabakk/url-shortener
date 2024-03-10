@@ -1,6 +1,20 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.5.1.alpha.1 - 11/03/2024
+
+### Added
+
+- **Get User URL Test:** Added a test to ensure that the user's URL is retrieved.
+
+### Changed
+
+- **Parse Time:** Updated the parse time for database.
+
+- **Renamed RegistrationDate to CreatedAt:** Renamed the `registration_date` field to `created_at` in the user model.
+
+- **Renamed CreationDate to CreatedAt:** Renamed the `creation_date` field to `created_at` in the click model.
+
 ## 0.5.1 - 10/03/2024
 
 ### Added
