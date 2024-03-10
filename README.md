@@ -6,6 +6,7 @@
 [![Code Style](https://img.shields.io/badge/code%20style-gofmt-%2300ADD8)](https://golang.org/doc/effective_go.html#formatting)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/abdullahkabakk/url-shortener/blob/main/LICENSE)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/abdullahkabakk/url-shortener)](https://golang.org/doc/devel/release.html)
+[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/29774798-07fc0dc3-e608-40cc-bb6a-d9adf3248971?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D29774798-07fc0dc3-e608-40cc-bb6a-d9adf3248971%26entityType%3Dcollection%26workspaceId%3D108d3a9c-b63c-4312-b0f2-f9ec95727ae4)
 
 This project is a URL shortener built with Go and Echo framework, utilizing MySQL for data storage.
 

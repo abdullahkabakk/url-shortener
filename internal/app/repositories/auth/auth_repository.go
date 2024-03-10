@@ -56,7 +56,7 @@ func (r *DBAuthRepository) Create(user *user_model.User) (*user_model.User, erro
 // GetByUsername retrieves an auth record from the database by username.
 func (r *DBAuthRepository) GetByUsername(username string) (*user_model.User, error) {
 	// Prepare SQL statement
-	query := "SELECT id, username, password, registration_date FROM users WHERE username = ?"
+	query := "SELECT id, username, password, created_at FROM users WHERE username = ?"
 	row := r.DB.QueryRow(query, username)
 
 	// Initialize a new User object to store the result

@@ -3,6 +3,7 @@ package auth_handler
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strings"
 	"url-shortener/internal/app/models/user"
 	"url-shortener/internal/app/services/auth"
 	"url-shortener/internal/app/services/token"
@@ -59,6 +60,39 @@ func (h *Handler) LoginUserHandler(c echo.Context) error {
 
 	// Generate a token for the authenticated auth
 	token, err := h.TokenRepository.GenerateToken(userVal)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"token": token})
+}
+
+// RefreshTokenHandler handles HTTP requests to refresh an auth token.
+func (h *Handler) RefreshTokenHandler(c echo.Context) error {
+	// Extract token from request headers or cookies
+	token := c.Request().Header.Get("Authorization")
+
+	if token == "" {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Token is required"})
+	}
+
+	// Initialize userID to nil
+	var userID *uint
+	// If token is provided, validate it and get the user ID
+	parts := strings.Fields(token)
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
+	}
+	token = parts[1]
+	// Call the authentication service to validate the token and get the user ID
+	id, err := h.TokenRepository.ValidateToken(token)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
+	}
+	userID = &id
+
+	// Generate a new token for the authenticated auth
+	token, err = h.TokenRepository.GenerateToken(&user_model.User{ID: *userID})
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}

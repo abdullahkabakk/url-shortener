@@ -1,6 +1,45 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.5.1 - 10/03/2024
+
+### Added
+
+- **Empty Token Test:** Added a test to ensure that empty token are not sent to the server.
+
+### Changed
+
+- **Refactored Auth Repository Test:** Refactored the auth repository test to use the testify library for better assertions.
+
+## 0.5.0 - 10/03/2024
+
+### Added
+
+- **Refresh Token Route:** Added a new route to the echo server to handle refresh token requests.
+
+## 0.4.1.alpha.2 - 10/03/2024
+
+### Added
+
+- **Auth Handler:** Added a new handler to handle refresh token requests. 
+
+### Changed
+
+- **Auth Query:** Updated the auth query from `registration_date` to `created_at`.
+  - ***Reason:*** This change was made to ensure that the correct field is used to store the registration date.
+  - ***Impact:*** This change will affect the database schema and the auth repository.
+- **Console Log:** Removed console logs from url_handler
+
+## 0.4.1.alpha.1 - 10/03/2024
+
+### Added
+
+- **Refresh Token Test:** Added a test to ensure that the refresh token is generated.
+
+### Docs
+
+- **Postman Collection:** Added a postman collection to the project.
+
 ## 0.4.1 - 10/03/2024
 
 ### Changed
