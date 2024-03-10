@@ -1,6 +1,12 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.5.0 - 10/03/2024
+
+### Added
+
+- **Refresh Token Route:** Added a new route to the echo server to handle refresh token requests.
+
 ## 0.4.1.alpha.2 - 10/03/2024
 
 ### Added

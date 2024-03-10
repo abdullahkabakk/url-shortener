@@ -64,6 +64,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 func authRouter(group *echo.Group, userHandler *auth_handler.Handler) {
 	group.POST("/register/", userHandler.CreateUserHandler)
 	group.POST("/login/", userHandler.LoginUserHandler)
+	group.GET("/refresh-token/", userHandler.RefreshTokenHandler)
 }
 
 func urlRoute(group *echo.Group, urlHandler *url_handler.Handler) {
