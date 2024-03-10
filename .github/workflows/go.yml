@@ -50,13 +50,17 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     needs: [lint, security-scan]
+    environment: development
     env:
-      DB_HOST: localhost
-      DB_USERNAME: root
-      DB_PASSWORD: root
-      DB_NAME: shortener
-      DB_PORT: 3306
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      HOST: ${{ secrets.HOST }}
       JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      PORT: ${{ secrets.PORT }}
 
     steps:
       - name: Checkout Repository
