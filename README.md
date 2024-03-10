@@ -1,6 +1,5 @@
 # URL Shortener
 
-[![codecov](https://codecov.io/github/abdullahkabakk/url-shortener/graph/badge.svg?token=EX5NB794NE)](https://codecov.io/github/abdullahkabakk/url-shortener)
 [![Go Report Card](https://goreportcard.com/badge/github.com/abdullahkabakk/url-shortener)](https://goreportcard.com/report/github.com/abdullahkabakk/url-shortener)
 [![Build](https://github.com/abdullahkabakk/url-shortener/actions/workflows/go.yml/badge.svg)](https://github.com/abdullahkabakk/url-shortener/actions/workflows/go.yml)
 [![Coverage](https://img.shields.io/codecov/c/github/abdullahkabakk/url-shortener)](https://codecov.io/github/abdullahkabakk/url-shortener)
@@ -18,7 +17,6 @@ Feel free to check the initial design of the database schema [here](https://dbdo
 - [Technologies](#technologies)
 - [API Endpoints](#api-endpoints)
 - [Installation](#installation)
-- [Database Migrations](#database-migrations)
 - [Usage](#usage)
 - [Directory Structure](#directory-structure)
 - [Commit Tag Meanings](#commit-tag-meanings)
