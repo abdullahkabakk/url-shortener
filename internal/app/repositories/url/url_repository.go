@@ -3,6 +3,7 @@ package url_repository
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"url-shortener/internal/app/models/url"
 )
 
@@ -11,6 +12,7 @@ type Repository interface {
 	CreateURL(originalURL, shortCode string, userId *uint) (string, error)
 	GetOriginalURL(shortCode string) (string, error)
 	GetUserURLs(userID uint) ([]url_model.URL, error)
+	GetUserWithShortURL(userID uint, shortURL string) error
 }
 
 // DBURLRepository is an implementation of URLRepository for MySQL database.
@@ -103,7 +105,7 @@ func (r *DBURLRepository) GetUserURLs(userID uint) ([]url_model.URL, error) {
 	// Iterate through the rows and scan the result into URL objects
 	for rows.Next() {
 		var u url_model.URL
-		err := rows.Scan(&u.ID, &u.OriginalURL, &u.ShortenedURL, &u.UserID, &u.CreatedAt)
+		err := rows.Scan(&u.OriginalURL, &u.ShortenedURL, &u.UserID, &u.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -111,4 +113,27 @@ func (r *DBURLRepository) GetUserURLs(userID uint) ([]url_model.URL, error) {
 	}
 
 	return urls, nil
+}
+
+// GetUserWithShortURL retrieves the user who created the given shortened URL.
+func (r *DBURLRepository) GetUserWithShortURL(userID uint, shortURL string) error {
+	// Query to retrieve user_id associated with the short URL
+	query := "SELECT user_id FROM urls WHERE shortened_url = ?"
+	var retrievedUserID uint
+	err := r.DB.QueryRow(query, shortURL).Scan(&retrievedUserID)
+
+	// Handling errors
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return url_model.ErrURLNotFound
+		}
+		return fmt.Errorf("error retrieving user ID: %v", err)
+	}
+
+	// Check if retrieved user_id matches the provided userID
+	if retrievedUserID != userID {
+		return fmt.Errorf("the provided short URL does not belong to the user")
+	}
+
+	return nil
 }

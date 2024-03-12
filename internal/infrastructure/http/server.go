@@ -3,13 +3,12 @@ package http
 import (
 	"context"
 	"fmt"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	_ "net/http"
 	"url-shortener/internal/app/handlers/auth"
 	clicks_handler "url-shortener/internal/app/handlers/clicks"
 	"url-shortener/internal/app/handlers/url"
-
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 // Server represents the HTTP server.
@@ -74,4 +73,5 @@ func urlRoute(group *echo.Group, urlHandler *url_handler.Handler) {
 
 func clicksRoute(group *echo.Group, clickHandler *clicks_handler.Handler) {
 	group.GET("/:id", clickHandler.CreateClickHandler)
+	group.GET("/:id/details/", clickHandler.GetUserClickDetailsHandler)
 }

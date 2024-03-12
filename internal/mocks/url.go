@@ -75,3 +75,16 @@ func (r *MockUrlRepository) GetUserURLs(userId uint) ([]url_model.URL, error) {
 	}
 	return urls, nil
 }
+
+// GetUserWithShortURL simulates checking if a user is the owner of an url in the mock database.
+func (r *MockUrlRepository) GetUserWithShortURL(userId uint, shortURL string) error {
+	if shortURL == "invalid" {
+		return url_model.ErrURLNotFound
+	}
+	for _, u := range r.Urls {
+		if u.UserID == userId && u.ShortenedURL == shortURL {
+			return nil
+		}
+	}
+	return nil
+}

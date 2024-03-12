@@ -304,6 +304,31 @@ func TestDBURLRepository_GetUserURLs(t *testing.T) {
 
 }
 
+func TestDBURLREPOSITORY_GetUserURLScanError(t *testing.T) {
+	// Create a new mock database connection
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("failed to create mock database connection: %v", err)
+	}
+	defer db.Close()
+
+	// Create a new instance of DBURLRepository with the mock DB connection
+	repo := NewDBURLRepository(db)
+
+	// Prepare the mock query and result
+	mock.ExpectQuery("SELECT \\* FROM urls WHERE user_id = \\?").
+		WithArgs(uint(1)).
+		WillReturnRows(sqlmock.NewRows([]string{"original_url", "shortened_url"}).AddRow("http://example.com", "http://short.com"))
+
+	// Call the GetUserURLs method
+	urls, err := repo.GetUserURLs(uint(1))
+
+	// Assert that an error is returned
+	assert.Error(t, err)
+	assert.Empty(t, urls)
+
+}
+
 func TestReturnSuccessfulUrlReturn(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -317,9 +342,9 @@ func TestReturnSuccessfulUrlReturn(t *testing.T) {
 
 		// Define the expected SQL query and results
 		expectedUserID := uint(1)
-		expectedRows := sqlmock.NewRows([]string{"id", "original_url", "shortened_url", "user_id", "created_at"}).
-			AddRow(1, "http://example.com", "http://short.com", expectedUserID, time.Now()).
-			AddRow(2, "http://example2.com", "http://short2.com", expectedUserID, time.Now())
+		expectedRows := sqlmock.NewRows([]string{"original_url", "shortened_url", "user_id", "created_at"}).
+			AddRow("http://example.com", "http://short.com", expectedUserID, time.Now()).
+			AddRow("http://example2.com", "http://short2.com", expectedUserID, time.Now())
 
 		// Expect the query with the given user ID
 		mock.ExpectQuery("SELECT \\* FROM urls WHERE user_id = \\?").WithArgs(expectedUserID).WillReturnRows(expectedRows)
@@ -332,15 +357,15 @@ func TestReturnSuccessfulUrlReturn(t *testing.T) {
 
 		// Check if the returned URLs match the expected ones
 		expectedURLs := []url_model.URL{
-			{ID: 1, OriginalURL: "http://example.com", ShortenedURL: "http://short.com"},
-			{ID: 2, OriginalURL: "http://example2.com", ShortenedURL: "http://short2.com"},
+			{OriginalURL: "http://example.com", ShortenedURL: "http://short.com"},
+			{OriginalURL: "http://example2.com", ShortenedURL: "http://short2.com"},
 		}
 		if len(urls) != len(expectedURLs) {
 			t.Errorf("expected %d URLs, got %d", len(expectedURLs), len(urls))
 		}
 
 		for i, u := range urls {
-			if u.ID != expectedURLs[i].ID || u.OriginalURL != expectedURLs[i].OriginalURL || u.ShortenedURL != expectedURLs[i].ShortenedURL {
+			if u.OriginalURL != expectedURLs[i].OriginalURL || u.ShortenedURL != expectedURLs[i].ShortenedURL {
 				t.Errorf("expected URL %d to be %+v, got %+v", i+1, expectedURLs[i], u)
 			}
 		}
@@ -372,4 +397,128 @@ func TestReturnSuccessfulUrlReturn(t *testing.T) {
 
 	})
 
+}
+
+func TestDBURLRepository_GetUserWithShortURL(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	repo := NewDBURLRepository(db)
+
+	t.Run("Failed to Prepare SQL Statement", func(t *testing.T) {
+		userID := uint(1)
+		shortURL := "abc123"
+
+		mock.ExpectPrepare("SELECT user_id FROM urls").
+			WillReturnError(errors.New("prepare error"))
+
+		err := repo.GetUserWithShortURL(userID, shortURL)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Failed to Execute SQL Statement", func(t *testing.T) {
+		userID := uint(1)
+		shortURL := "abc123"
+
+		mock.ExpectPrepare("SELECT user_id FROM urls").
+			ExpectQuery().
+			WithArgs(userID, shortURL).
+			WillReturnError(errors.New("execute error"))
+
+		err := repo.GetUserWithShortURL(userID, shortURL)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("No Rows Returned", func(t *testing.T) {
+		userID := uint(1)
+		shortURL := "abc123"
+
+		mock.ExpectPrepare("SELECT user_id FROM urls").
+			ExpectQuery().
+			WithArgs(userID, shortURL).
+			WillReturnRows(sqlmock.NewRows([]string{"user_id"}))
+
+		err := repo.GetUserWithShortURL(userID, shortURL)
+
+		assert.Error(t, err)
+	})
+
+}
+
+func TestDBURLRepository_GetUserWithShortURL_ErrorNoRows(t *testing.T) {
+	// Create a new mock database connection
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("failed to create mock database connection: %v", err)
+	}
+	defer db.Close()
+
+	// Create a new instance of DBURLRepository with the mock DB connection
+	repo := NewDBURLRepository(db)
+
+	// Prepare the mock query and result
+	mock.ExpectQuery("SELECT user_id FROM urls WHERE shortened_url = ?").
+		WithArgs("nonexistent").
+		WillReturnError(sql.ErrNoRows)
+
+	// Call the GetUserWithShortURL method with a nonexistent short code
+	err = repo.GetUserWithShortURL(1, "nonexistent")
+
+	// Assert that the correct error is returned
+	assert.ErrorIs(t, err, url_model.ErrURLNotFound)
+	assert.NoError(t, mock.ExpectationsWereMet(), "there were unfulfilled expectations")
+}
+
+func TestDBURLRepository_GetUserWithShortURL_ErrUserIsNotOwner(t *testing.T) {
+	// Create a new mock database connection
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("failed to create mock database connection: %v", err)
+	}
+	defer db.Close()
+
+	// Create a new instance of DBURLRepository with the mock DB connection
+	repo := NewDBURLRepository(db)
+
+	// Prepare the mock query and result
+	mock.ExpectQuery("SELECT user_id FROM urls WHERE shortened_url = ?").
+		WithArgs("nonexistent").
+		WillReturnRows(sqlmock.NewRows([]string{"user_id"}).AddRow(uint(2)))
+
+	// Call the GetUserWithShortURL method with a nonexistent short code
+	err = repo.GetUserWithShortURL(1, "nonexistent")
+
+	// Assert that the correct error is returned
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "the provided short URL does not belong to the user")
+	assert.NoError(t, mock.ExpectationsWereMet(), "there were unfulfilled expectations")
+}
+
+func TestGetUserWithShortUrlSuccess(t *testing.T) {
+	// Create a new mock database connection
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("failed to create mock database connection: %v", err)
+	}
+	defer db.Close()
+
+	// Create a new instance of DBURLRepository with the mock DB connection
+	repo := NewDBURLRepository(db)
+
+	// Prepare the mock query and result
+	mock.ExpectQuery("SELECT user_id FROM urls WHERE shortened_url = ?").
+		WithArgs("valid").
+		WillReturnRows(sqlmock.NewRows([]string{"user_id"}).AddRow(uint(1)))
+
+	// Call the GetUserWithShortURL method with a valid short code
+	err = repo.GetUserWithShortURL(1, "valid")
+
+	// Assert that no error is returned
+	assert.NoError(t, err)
+	assert.NoError(t, mock.ExpectationsWereMet(), "there were unfulfilled expectations")
 }
