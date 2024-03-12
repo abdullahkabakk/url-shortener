@@ -22,3 +22,29 @@ func TestCreateClick(t *testing.T) {
 		}
 	})
 }
+
+func TestGetClicks(t *testing.T) {
+	mockRepository := NewMockClicksRepository()
+
+	t.Run("Get Clicks Successfully", func(t *testing.T) {
+		clicks, err := mockRepository.GetClicks("test-url")
+
+		if err != nil {
+			t.Errorf("Expected no error, got %v", err)
+		}
+		if len(clicks) != 0 {
+			t.Errorf("Expected no clicks, got %v", len(clicks))
+		}
+	})
+
+	t.Run("Failed to Get Clicks", func(t *testing.T) {
+		clicks, err := mockRepository.GetClicks("not_valid")
+
+		if err == nil {
+			t.Errorf("Expected an error, got nil")
+		}
+		if clicks != nil {
+			t.Errorf("Expected no clicks, got %v", clicks)
+		}
+	})
+}

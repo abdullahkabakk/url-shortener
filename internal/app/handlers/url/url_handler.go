@@ -1,7 +1,6 @@
 package url_handler
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"net/url"
@@ -30,7 +29,6 @@ func (h *Handler) ShortenURLHandler(c echo.Context) error {
 
 	// Initialize userID to nil
 	var userID *uint
-	fmt.Println("token", token)
 	// If token is provided, validate it and get the user ID
 	if token != "" {
 		parts := strings.Fields(token)
@@ -52,6 +50,10 @@ func (h *Handler) ShortenURLHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
 	}
 
+	if urlData.OriginalURL == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Original URL is required"})
+	}
+
 	// Check if the provided URL is valid
 	_, err := url.ParseRequestURI(urlData.OriginalURL)
 	if err != nil {
@@ -65,4 +67,36 @@ func (h *Handler) ShortenURLHandler(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, map[string]string{"shortened_url": shortenedURL})
+}
+
+// GetUserUrlsHandler handles HTTP requests to get the URLs of a user.
+func (h *Handler) GetUserUrlsHandler(c echo.Context) error {
+	// Extract token from request headers or cookies
+	token := c.Request().Header.Get("Authorization")
+	if token == "" {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Token is required"})
+	}
+
+	// Initialize userID to nil
+	var userID uint
+	// If token is provided, validate it and get the user ID
+	parts := strings.Fields(token)
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
+	}
+	token = parts[1]
+	// Call the authentication service to validate the token and get the user ID
+	id, err := h.TokenService.ValidateToken(token)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
+	}
+	userID = id
+
+	// Call the URL service to get the URLs of the user
+	urls, err := h.Service.GetUserURLs(userID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, urls)
 }

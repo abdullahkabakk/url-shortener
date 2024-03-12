@@ -12,9 +12,8 @@ var ErrClickNotCreated = errors.New("click not created")
 
 // URL represents a URL entity in the application.
 type URL struct {
-	ID           uint      `json:"id"`
 	OriginalURL  string    `json:"original_url"`
 	ShortenedURL string    `json:"shortened_url"`
 	UserID       uint      `json:"user_id"`
-	CreationDate time.Time `json:"creation_date"`
+	CreatedAt    time.Time `json:"created_at"`
 }

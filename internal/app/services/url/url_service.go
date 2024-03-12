@@ -1,6 +1,7 @@
 package url_service
 
 import (
+	url_model "url-shortener/internal/app/models/url"
 	"url-shortener/internal/app/repositories/url"
 	"url-shortener/internal/utils"
 )
@@ -38,4 +39,26 @@ func (s *Service) GetOriginalURL(shortURL string) (string, error) {
 	}
 
 	return originalURL, nil
+}
+
+// GetUserURLs retrieves the URLs created by the given user.
+func (s *Service) GetUserURLs(userID uint) ([]url_model.URL, error) {
+	// Retrieve the URLs from the repository
+	urls, err := s.Repository.GetUserURLs(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return urls, nil
+}
+
+// GetUserWithShortURL retrieves the user who created the given shortened URL.
+func (s *Service) GetUserWithShortURL(userId uint, shortURL string) error {
+	// Check if the user is the owner of the short URL
+	err := s.Repository.GetUserWithShortURL(userId, shortURL)
+	if err != nil {
+		return err
+	}
+	return nil
+
 }

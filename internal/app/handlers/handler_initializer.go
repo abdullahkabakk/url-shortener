@@ -39,8 +39,9 @@ func InitializeClickHandlers(db *sql.DB) *clicks_handler.Handler {
 
 	urlRepository := url_repository.NewDBURLRepository(db)
 	urlService := url_service.NewURLService(urlRepository)
+	tokenService := token_service.NewTokenService(os.Getenv("JWT_SECRET_KEY"))
 
 	clickService := clicks_service.NewClicksService(clickRepository)
-	clickHandler := clicks_handler.NewClickHandler(clickService, urlService)
+	clickHandler := clicks_handler.NewClickHandler(clickService, urlService, tokenService)
 	return clickHandler
 }

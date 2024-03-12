@@ -32,3 +32,30 @@ func TestCreateClick(t *testing.T) {
 	})
 
 }
+
+func TestGetClicks(t *testing.T) {
+	mockRepository := mocks.NewMockClicksRepository()
+
+	// Create a new instance of ClicksService with the mock repository
+	clickService := NewClicksService(mockRepository)
+
+	t.Run("Get Clicks Successfully", func(t *testing.T) {
+		// Call the GetClicks method
+		clicks, err := clickService.GetClicks("test-url")
+
+		// Assertions
+		assert.NoError(t, err)
+		assert.Empty(t, clicks)
+	})
+
+	t.Run("Failed to Get Clicks", func(t *testing.T) {
+		// Set up repository to return an error
+
+		// Call the GetClicks method
+		clicks, err := clickService.GetClicks("not_valid")
+
+		// Assertions
+		assert.Error(t, err)
+		assert.Nil(t, clicks)
+	})
+}

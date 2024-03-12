@@ -75,7 +75,6 @@ func TestCreateUserHandler(t *testing.T) {
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := echo.New().NewContext(req, rec)
-
 		// Call CreateUserHandler with valid request body for existing user
 		err := userHandler.CreateUserHandler(c)
 
@@ -100,6 +99,26 @@ func TestCreateUserHandler(t *testing.T) {
 		// Check the response
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
 		assert.Contains(t, rec.Body.String(), user_model.ErrUserAlreadyExists.Error())
+		assert.NoError(t, err)
+
+	})
+
+	t.Run("Should return error if password is missing", func(t *testing.T) {
+		// Prepare a mock echo.Context with valid request body
+		userData.Username = "testuser"
+		userData.Password = ""
+		jsonData, _ := json.Marshal(userData)
+		req := httptest.NewRequest(http.MethodPost, registerEndpoint, bytes.NewReader(jsonData))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call CreateUserHandler with valid request body
+		err := userHandler.CreateUserHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Contains(t, rec.Body.String(), "Username and password are required")
 		assert.NoError(t, err)
 
 	})
@@ -222,4 +241,124 @@ func TestLoginUserHandler(t *testing.T) {
 		assert.NoError(t, err)
 
 	})
+
+	t.Run("Should return error if password is missing", func(t *testing.T) {
+		// Prepare a mock echo.Context with valid request body
+		userData.Username = "testuser"
+		userData.Password = ""
+		jsonData, _ := json.Marshal(userData)
+		req := httptest.NewRequest(http.MethodPost, loginEndpoint, bytes.NewReader(jsonData))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+		// Call CreateUserHandler with valid request body
+		err := userHandler.LoginUserHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Contains(t, rec.Body.String(), "Username and password are required")
+		assert.NoError(t, err)
+
+	})
+}
+
+func TestRefreshTokenHandler(t *testing.T) {
+	// Create mock user repository and service
+	userRepository := mocks.NewMockUserRepository()
+	userService := auth_service.NewAuthService(userRepository)
+	tokenService := mocks.NewMockTokenService()
+	userHandler := NewAuthHandler(userService, tokenService)
+
+	// Define test user data
+	userData := user_model.User{
+		Username: "testuser",
+		Password: "password123",
+	}
+
+	t.Run("Should refresh token", func(t *testing.T) {
+		// Create a new auth
+		user, err := userService.CreateUser(userData)
+		assert.NoError(t, err)
+		assert.NotNil(t, user)
+
+		// Prepare a mock echo.Context with valid request body
+		req := httptest.NewRequest(http.MethodPost, userEndpoint+"refresh/", nil)
+		req.Header.Set(echo.HeaderAuthorization, "Bearer valid_token")
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call RefreshTokenHandler
+		err = userHandler.RefreshTokenHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Contains(t, rec.Body.String(), "token")
+		assert.NoError(t, err)
+	})
+
+	t.Run("Should return error for invalid token", func(t *testing.T) {
+		// Prepare a mock echo.Context with valid request body
+		req := httptest.NewRequest(http.MethodPost, userEndpoint+"refresh/", nil)
+		req.Header.Set(echo.HeaderAuthorization, "Bearer invalid")
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call RefreshTokenHandler
+		err := userHandler.RefreshTokenHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+		assert.Contains(t, rec.Body.String(), `{"error":"Invalid token"}`)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Should return error for empty token", func(t *testing.T) {
+		// Prepare a mock echo.Context with valid request body
+		req := httptest.NewRequest(http.MethodPost, userEndpoint+"refresh/", nil)
+		req.Header.Set(echo.HeaderAuthorization, "")
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call RefreshTokenHandler
+		err := userHandler.RefreshTokenHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+		assert.Contains(t, rec.Body.String(), `{"error":"Token is required"}`)
+		assert.NoError(t, err)
+
+	})
+
+	t.Run("Should return error for expired token", func(t *testing.T) {
+		// Prepare a mock echo.Context with valid request body
+		req := httptest.NewRequest(http.MethodPost, userEndpoint+"refresh/", nil)
+		req.Header.Set(echo.HeaderAuthorization, "Bearer expired")
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call RefreshTokenHandler
+		err := userHandler.RefreshTokenHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+		assert.Contains(t, rec.Body.String(), `{"error":"invalid token"}`)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Should return error for non-existing user", func(t *testing.T) {
+		// Prepare a mock echo.Context with valid request body
+		req := httptest.NewRequest(http.MethodPost, userEndpoint+"refresh/", nil)
+		req.Header.Set(echo.HeaderAuthorization, "NotExisting nonexisting")
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call RefreshTokenHandler
+		err := userHandler.RefreshTokenHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+		assert.Contains(t, rec.Body.String(), `{"error":"Invalid token"}`)
+		assert.NoError(t, err)
+	})
+
 }

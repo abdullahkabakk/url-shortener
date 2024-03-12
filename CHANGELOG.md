@@ -1,6 +1,111 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.7.0 - 13/03/2024
+
+### Added
+
+- **Get User Clicks Endpoint:** Added a new route to the echo server to handle the user's clicks.
+
+- **Get User Clicks Handler:** Added a new handler to handle the user's clicks.
+
+- **Get User Clicks Service:** Added a new service to handle the user's clicks.
+
+- **Get User Clicks Repository:** Added a new repository to handle the user's clicks.
+
+- **Get User Short URL Service:** Added a new service to handle the user's short URL.
+
+- **Get User Short URL Repository:** Added a new repository to handle the user's short URL.
+
+- **Token Service inside Click Handler:** Added the token service to the click handler.
+  - ***Reason:*** This change was made to ensure that the token service is used to validate the token.
+  - ***Impact:*** This change will affect the click handler.
+
+- **Clicks Model:** Added a clicks model to the project.
+
+## 0.6.2 - 13/03/2024
+
+### Added
+
+- **Validation:** Added validation to the auth and url handler.
+
+### Changed
+
+- **Database Migration:** Updated the database migration removed the `id` from url table.
+
+## 0.6.1 - 11/03/2024
+
+### Changed
+
+- **Error handling:** Added error handling for create_url in tests
+
+## 0.6.0 - 11/03/2024
+
+### Added
+
+- **User's URL Endpoint:** Added a new route to the echo server to handle the user's URL.
+
+## 0.5.1.alpha.2 - 11/03/2024
+
+### Added
+
+- **Get User URL Functionality:** Added functionality to retrieve the user's URL.
+
+- **Mock URL Repository:** Added a mock URL repository to the project.
+
+## 0.5.1.alpha.1 - 11/03/2024
+
+### Added
+
+- **Get User URL Test:** Added a test to ensure that the user's URL is retrieved.
+
+### Changed
+
+- **Parse Time:** Updated the parse time for database.
+
+- **Renamed RegistrationDate to CreatedAt:** Renamed the `registration_date` field to `created_at` in the user model.
+
+- **Renamed CreationDate to CreatedAt:** Renamed the `creation_date` field to `created_at` in the click model.
+
+## 0.5.1 - 10/03/2024
+
+### Added
+
+- **Empty Token Test:** Added a test to ensure that empty token are not sent to the server.
+
+### Changed
+
+- **Refactored Auth Repository Test:** Refactored the auth repository test to use the testify library for better assertions.
+
+## 0.5.0 - 10/03/2024
+
+### Added
+
+- **Refresh Token Route:** Added a new route to the echo server to handle refresh token requests.
+
+## 0.4.1.alpha.2 - 10/03/2024
+
+### Added
+
+- **Auth Handler:** Added a new handler to handle refresh token requests. 
+
+### Changed
+
+- **Auth Query:** Updated the auth query from `registration_date` to `created_at`.
+  - ***Reason:*** This change was made to ensure that the correct field is used to store the registration date.
+  - ***Impact:*** This change will affect the database schema and the auth repository.
+- **Console Log:** Removed console logs from url_handler
+
+## 0.4.1.alpha.1 - 10/03/2024
+
+### Added
+
+- **Refresh Token Test:** Added a test to ensure that the refresh token is generated.
+
+### Docs
+
+- **Postman Collection:** Added a postman collection to the project.
+
 ## 0.4.1 - 10/03/2024
 
 ### Changed

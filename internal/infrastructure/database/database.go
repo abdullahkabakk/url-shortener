@@ -22,7 +22,7 @@ type DBConnector struct {
 
 // Connect establishes a connection to the MySQL database using the provided credentials and driver name.
 func (m *DBConnector) Connect(driverName string) (*sql.DB, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/", m.Username, m.Password, m.Host, m.Port)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/?parseTime=true", m.Username, m.Password, m.Host, m.Port)
 	db, err := sql.Open(driverName, dsn)
 	if err != nil {
 		return nil, fmt.Errorf("[DB Connection] Failed to connect to Database: %w", err)
@@ -81,19 +81,18 @@ func migrations(db *sql.DB) error {
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 			);`,
 		`CREATE TABLE IF NOT EXISTS urls (
-			id INT AUTO_INCREMENT PRIMARY KEY,
 			original_url TEXT NOT NULL,
-			shortened_url VARCHAR(10) NOT NULL UNIQUE,
+			shortened_url VARCHAR(8) PRIMARY KEY,
 			user_id INT,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (user_id) REFERENCES users(id)
 			);`,
 		`CREATE TABLE IF NOT EXISTS clicks (
 			id INT AUTO_INCREMENT PRIMARY KEY,
-			url_id INT NOT NULL,
+			url_id VARCHAR(8) NOT NULL,
 			ip_address VARCHAR(50) NOT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			FOREIGN KEY (url_id) REFERENCES urls(id)
+			FOREIGN KEY (url_id) REFERENCES urls(shortened_url)
 			);`,
 	}
 

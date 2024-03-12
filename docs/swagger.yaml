@@ -106,6 +106,39 @@
             }
           }
         }
+      },
+    },
+    "/auth/refresh-token/": {
+      "get": {
+        "summary": "Refresh user token",
+        "description": "Endpoint to refresh user token.",
+        "security": [
+          {
+            "Authorization": [
+              "schema": "#/definitions/UserToken"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token refreshed successfully",
+            "schema": {
+              "$ref": "#/definitions/UserToken"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
       }
     },
     "/url/shorten": {
@@ -141,6 +174,39 @@
             "description": "Bad request",
             "schema": {
               "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+    },
+    "/url/": {
+      "get": {
+        "summary": "Get User URLs",
+        "description": "Endpoint to get all URLs of the user.",
+        "security": [
+          {
+            "Authorization": [
+              "schema": "#/definitions/UserToken"
+            ],
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User URLs retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/URLData"
             }
           },
           "401": {

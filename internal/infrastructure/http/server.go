@@ -3,13 +3,12 @@ package http
 import (
 	"context"
 	"fmt"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	_ "net/http"
 	"url-shortener/internal/app/handlers/auth"
 	clicks_handler "url-shortener/internal/app/handlers/clicks"
 	"url-shortener/internal/app/handlers/url"
-
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 // Server represents the HTTP server.
@@ -64,12 +63,15 @@ func (s *Server) Shutdown(ctx context.Context) error {
 func authRouter(group *echo.Group, userHandler *auth_handler.Handler) {
 	group.POST("/register/", userHandler.CreateUserHandler)
 	group.POST("/login/", userHandler.LoginUserHandler)
+	group.GET("/refresh-token/", userHandler.RefreshTokenHandler)
 }
 
 func urlRoute(group *echo.Group, urlHandler *url_handler.Handler) {
 	group.POST("/shorten/", urlHandler.ShortenURLHandler)
+	group.GET("/", urlHandler.GetUserUrlsHandler)
 }
 
 func clicksRoute(group *echo.Group, clickHandler *clicks_handler.Handler) {
 	group.GET("/:id", clickHandler.CreateClickHandler)
+	group.GET("/:id/details/", clickHandler.GetUserClickDetailsHandler)
 }
