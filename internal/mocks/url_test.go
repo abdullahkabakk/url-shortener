@@ -80,3 +80,26 @@ func TestMockUrlRepository_GetUserUrls(t *testing.T) {
 		assert.Empty(t, urls)
 	})
 }
+
+func TestMockUrlRepository_GetUserWithShortURL(t *testing.T) {
+	repo := NewMockUrlRepository()
+	userID := uint(1)
+	_, err := repo.CreateURL("https://www.example.com", "abc123", &userID)
+	if err != nil {
+		return
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		err := repo.GetUserWithShortURL(userID, "abc123")
+		assert.NoError(t, err)
+	})
+
+	t.Run("Error - User not found", func(t *testing.T) {
+		err := repo.GetUserWithShortURL(2, "abc123")
+		assert.Nil(t, err)
+	})
+	t.Run("Error - Short URL not found", func(t *testing.T) {
+		err := repo.GetUserWithShortURL(userID, "invalid")
+		assert.Error(t, err)
+	})
+}

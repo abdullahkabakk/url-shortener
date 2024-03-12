@@ -151,6 +151,18 @@ func TestShortenUrlHandler(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
+	t.Run("Should return error if url is not provided", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, shortenEndpoint, nil)
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		err := mockHandler.ShortenURLHandler(c)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Contains(t, rec.Body.String(), "error")
+		assert.NoError(t, err)
+
+	})
 }
 
 func TestUserUrlHandlers(t *testing.T) {

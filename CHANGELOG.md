@@ -1,6 +1,38 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.7.0 - 13/03/2024
+
+### Added
+
+- **Get User Clicks Endpoint:** Added a new route to the echo server to handle the user's clicks.
+
+- **Get User Clicks Handler:** Added a new handler to handle the user's clicks.
+
+- **Get User Clicks Service:** Added a new service to handle the user's clicks.
+
+- **Get User Clicks Repository:** Added a new repository to handle the user's clicks.
+
+- **Get User Short URL Service:** Added a new service to handle the user's short URL.
+
+- **Get User Short URL Repository:** Added a new repository to handle the user's short URL.
+
+- **Token Service inside Click Handler:** Added the token service to the click handler.
+  - ***Reason:*** This change was made to ensure that the token service is used to validate the token.
+  - ***Impact:*** This change will affect the click handler.
+
+- **Clicks Model:** Added a clicks model to the project.
+
+## 0.6.2 - 13/03/2024
+
+### Added
+
+- **Validation:** Added validation to the auth and url handler.
+
+### Changed
+
+- **Database Migration:** Updated the database migration removed the `id` from url table.
+
 ## 0.6.1 - 11/03/2024
 
 ### Changed

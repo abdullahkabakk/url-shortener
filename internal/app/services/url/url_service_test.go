@@ -1,7 +1,6 @@
 package url_service
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"url-shortener/internal/mocks"
@@ -66,7 +65,6 @@ func TestGetUserUrls(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error: %s", err)
 		}
-		fmt.Println(urls)
 		assert.NotEmpty(t, urls)
 	})
 
@@ -75,4 +73,27 @@ func TestGetUserUrls(t *testing.T) {
 		assert.Error(t, err)
 	})
 
+}
+
+func TestGetUserWithShortURL(t *testing.T) {
+	mockRepo := mocks.NewMockUrlRepository()
+
+	urlService := NewURLService(mockRepo)
+
+	t.Run("Get User with Short URL Successfully", func(t *testing.T) {
+		user := uint(1)
+		_, err := mockRepo.CreateURL("https://www.example.com", "abc123", &user)
+		if err != nil {
+			return
+		}
+		err = urlService.GetUserWithShortURL(1, "abc123")
+		if err != nil {
+			t.Errorf("Error: %s", err)
+		}
+	})
+
+	t.Run("Should return error for nonexistent URL", func(t *testing.T) {
+		err := urlService.GetUserWithShortURL(1, "invalid")
+		assert.Error(t, err)
+	})
 }

@@ -1,6 +1,7 @@
 package mocks
 
 import (
+	clicks_model "url-shortener/internal/app/models/clicks"
 	"url-shortener/internal/app/models/url"
 )
 
@@ -22,4 +23,12 @@ func NewMockClicksRepository() *MockClicksRepository {
 	return &MockClicksRepository{
 		Urls: make(map[uint]*url_model.URL),
 	}
+}
+
+func (m MockClicksRepository) GetClicks(shortURL string) ([]clicks_model.Clicks, error) {
+	if shortURL == "not_valid" {
+		return nil, clicks_model.ErrClicksNotFound
+	}
+	return []clicks_model.Clicks{}, nil
+
 }

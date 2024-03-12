@@ -50,6 +50,10 @@ func (h *Handler) ShortenURLHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
 	}
 
+	if urlData.OriginalURL == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Original URL is required"})
+	}
+
 	// Check if the provided URL is valid
 	_, err := url.ParseRequestURI(urlData.OriginalURL)
 	if err != nil {

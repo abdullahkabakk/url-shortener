@@ -51,3 +51,14 @@ func (s *Service) GetUserURLs(userID uint) ([]url_model.URL, error) {
 
 	return urls, nil
 }
+
+// GetUserWithShortURL retrieves the user who created the given shortened URL.
+func (s *Service) GetUserWithShortURL(userId uint, shortURL string) error {
+	// Check if the user is the owner of the short URL
+	err := s.Repository.GetUserWithShortURL(userId, shortURL)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
