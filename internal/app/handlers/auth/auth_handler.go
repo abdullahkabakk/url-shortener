@@ -29,6 +29,10 @@ func (h *Handler) CreateUserHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
 	}
 
+	if user.Username == "" || user.Password == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Username and password are required"})
+	}
+
 	// Call the auth service to create the auth
 	userVal, err := h.Service.CreateUser(user)
 	if err != nil {
@@ -50,6 +54,10 @@ func (h *Handler) LoginUserHandler(c echo.Context) error {
 	var user user_model.User
 	if err := c.Bind(&user); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
+	}
+
+	if user.Username == "" || user.Password == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Username and password are required"})
 	}
 
 	// Call the auth service to log in the auth

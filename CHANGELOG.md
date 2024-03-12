@@ -1,6 +1,16 @@
 # Changelog
 All significant updates to this project will be meticulously documented in this log.
 
+## 0.6.2 - 13/03/2024
+
+### Added
+
+- **Validation:** Added validation to the auth and url handler.
+
+### Changed
+
+- **Database Migration:** Updated the database migration removed the `id` from url table.
+
 ## 0.6.1 - 11/03/2024
 
 ### Changed

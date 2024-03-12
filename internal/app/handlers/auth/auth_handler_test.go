@@ -76,7 +76,6 @@ func TestCreateUserHandler(t *testing.T) {
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := echo.New().NewContext(req, rec)
-
 		// Call CreateUserHandler with valid request body for existing user
 		err := userHandler.CreateUserHandler(c)
 
@@ -101,6 +100,26 @@ func TestCreateUserHandler(t *testing.T) {
 		// Check the response
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
 		assert.Contains(t, rec.Body.String(), user_model.ErrUserAlreadyExists.Error())
+		assert.NoError(t, err)
+
+	})
+
+	t.Run("Should return error if password is missing", func(t *testing.T) {
+		// Prepare a mock echo.Context with valid request body
+		userData.Username = "testuser"
+		userData.Password = ""
+		jsonData, _ := json.Marshal(userData)
+		req := httptest.NewRequest(http.MethodPost, registerEndpoint, bytes.NewReader(jsonData))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+
+		// Call CreateUserHandler with valid request body
+		err := userHandler.CreateUserHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Contains(t, rec.Body.String(), "Username and password are required")
 		assert.NoError(t, err)
 
 	})
@@ -220,6 +239,25 @@ func TestLoginUserHandler(t *testing.T) {
 		// Check the response
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
 		assert.Contains(t, rec.Body.String(), user_model.ErrUserAlreadyExists.Error())
+		assert.NoError(t, err)
+
+	})
+
+	t.Run("Should return error if password is missing", func(t *testing.T) {
+		// Prepare a mock echo.Context with valid request body
+		userData.Username = "testuser"
+		userData.Password = ""
+		jsonData, _ := json.Marshal(userData)
+		req := httptest.NewRequest(http.MethodPost, loginEndpoint, bytes.NewReader(jsonData))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := echo.New().NewContext(req, rec)
+		// Call CreateUserHandler with valid request body
+		err := userHandler.LoginUserHandler(c)
+
+		// Check the response
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Contains(t, rec.Body.String(), "Username and password are required")
 		assert.NoError(t, err)
 
 	})
