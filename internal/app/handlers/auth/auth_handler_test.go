@@ -3,7 +3,6 @@ package auth_handler
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -340,8 +339,6 @@ func TestRefreshTokenHandler(t *testing.T) {
 		// Call RefreshTokenHandler
 		err := userHandler.RefreshTokenHandler(c)
 
-		fmt.Println(err)
-		fmt.Println(rec.Body.String())
 		// Check the response
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
 		assert.Contains(t, rec.Body.String(), `{"error":"invalid token"}`)

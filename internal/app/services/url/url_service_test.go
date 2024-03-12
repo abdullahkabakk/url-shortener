@@ -1,7 +1,6 @@
 package url_service
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"url-shortener/internal/mocks"
@@ -66,7 +65,6 @@ func TestGetUserUrls(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error: %s", err)
 		}
-		fmt.Println(urls)
 		assert.NotEmpty(t, urls)
 	})
 
