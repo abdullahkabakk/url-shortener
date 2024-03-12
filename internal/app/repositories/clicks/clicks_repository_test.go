@@ -134,11 +134,12 @@ func TestGetClicksSuccessful(t *testing.T) {
 
 	// Define test data
 	shortURL := "your-shortened-url"
+	now := time.Now()
 
 	// Define expected query and result
 	expectedRows := sqlmock.NewRows([]string{"id", "url_id", "ip_address", "created_at"}).
-		AddRow(1, "url_id_1", "192.168.0.1", time.Now()).
-		AddRow(2, "url_id_2", "192.168.0.2", time.Now())
+		AddRow(1, "url_id_1", "192.168.0.1", now).
+		AddRow(2, "url_id_2", "192.168.0.2", now)
 
 	// Expect the query with the short URL
 	mock.ExpectPrepare("SELECT \\* FROM clicks WHERE url_id = \\?").
@@ -154,8 +155,8 @@ func TestGetClicksSuccessful(t *testing.T) {
 
 	// Check if the returned clicks match the expected ones
 	expectedClicks := []clicks_model.Clicks{
-		{ID: 1, UrlID: "url_id_1", IPAddress: "192.168.0.1", CreatedAt: time.Now()},
-		{ID: 2, UrlID: "url_id_2", IPAddress: "192.168.0.2", CreatedAt: time.Now()},
+		{ID: 1, UrlID: "url_id_1", IPAddress: "192.168.0.1", CreatedAt: now},
+		{ID: 2, UrlID: "url_id_2", IPAddress: "192.168.0.2", CreatedAt: now},
 	}
 	if len(clicks) != len(expectedClicks) {
 		t.Errorf("expected %d clicks, got %d", len(expectedClicks), len(clicks))
