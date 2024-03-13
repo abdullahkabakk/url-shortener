@@ -198,11 +198,12 @@ All significant updates to this project will be meticulously documented in this 
 
 ## Security
 
-The project is regularly scanned for security vulnerabilities using security tools like Gosec. The current number of security vulnerabilities detected is 0.
+If you discover any security vulnerabilities within the URL shortener project, please follow these steps to report them:
+[Security Policy](SECURITY.md)
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit issues and pull requests.
+Find out how to contribute to the URL Shortener project by following the guidelines provided in the [CONTRIBUTING](CONTRIBUTING.md) file.
 
 ## License
 
