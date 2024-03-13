@@ -6,7 +6,7 @@ Security is a top priority for us. We take all reports of vulnerabilities seriou
 
 If you discover any security vulnerabilities within the URL shortener project, please follow these steps to report them:
 
-1. **Privately Notify Us**: Please report security vulnerabilities to us privately by emailing us at [security@example.com](mailto:abdullahkabakk@gmail.com). Please avoid disclosing the vulnerability publicly until it has been addressed by our team.
+1. **Privately Notify Us**: Please report security vulnerabilities to us privately by emailing us at [abdullahkabakk@gmail.com](mailto:abdullahkabakk@gmail.com). Please avoid disclosing the vulnerability publicly until it has been addressed by our team.
 
 2. **Provide Details**: When reporting vulnerabilities, please provide us with as much detail as possible, including steps to reproduce the vulnerability, affected components, and potential impact.
 
@@ -33,4 +33,4 @@ We value the contributions of security researchers and community members in help
 
 ### Contact Us
 
-If you have any questions regarding our security policy or need further assistance, please contact us at [security@example.com](mailto:abdullahkabakk@gmail.com).
+If you have any questions regarding our security policy or need further assistance, please contact us at [abdullahkabakk@gmail.com](mailto:abdullahkabakk@gmail.com).
